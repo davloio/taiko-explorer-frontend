@@ -1,0 +1,617 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 225 9% 15%; /* Darker text for better contrast */
+    --card: 0 0% 100%;
+    --card-foreground: 225 9% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 9% 15%;
+    --primary: 340 82% 52%; /* Taiko Pink #E81899 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 252 56% 57%; /* Taiko Purple #6438D6 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 13% 97%; /* Lighter gray background */
+    --muted-foreground: 225 9% 45%;
+    --accent: 45 93% 58%; /* Taiko Yellow #FFC236 */
+    --accent-foreground: 225 9% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 340 82% 52%; /* Taiko Pink */
+    --radius: 0.75rem;
+    
+    /* Custom Taiko variables */
+    --taiko-pink: #E81899;
+    --taiko-purple: #6438D6;
+    --taiko-yellow: #FFC236;
+    --taiko-dark: #1a1a1a;
+    --taiko-gray: #6b7280;
+    --taiko-light-gray: #f8fafc;
+  }
+
+  .dark {
+    --background: 225 15% 6%;
+    --foreground: 0 0% 93.7%;
+    --card: 225 15% 8%;
+    --card-foreground: 0 0% 93.7%;
+    --popover: 225 15% 8%;
+    --popover-foreground: 0 0% 93.7%;
+    --primary: 340 82% 52%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 252 56% 57%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 225 15% 15%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 45 93% 58%;
+    --accent-foreground: 225 15% 6%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 225 15% 20%;
+    --input: 225 15% 20%;
+    --ring: 340 82% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+}
+
+/* Taiko Brand Colors & Gradients */
+.taiko-gradient {
+  background: linear-gradient(135deg, #E81899 0%, #FFC236 38%, #6438D6 92%);
+}
+
+.taiko-gradient-subtle {
+  background: linear-gradient(135deg, rgba(232, 24, 153, 0.1) 0%, rgba(255, 194, 54, 0.1) 38%, rgba(100, 56, 214, 0.1) 92%);
+}
+
+.taiko-gradient-text {
+  background: linear-gradient(135deg, #E81899 0%, #FFC236 38%, #6438D6 92%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.taiko-pink-gradient {
+  background: linear-gradient(135deg, #E81899 0%, #ff2db3 100%);
+}
+
+.taiko-purple-gradient {
+  background: linear-gradient(135deg, #6438D6 0%, #7c4dff 100%);
+}
+
+/* Enhanced Card Components */
+.taiko-card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300;
+}
+
+.taiko-card:hover {
+  @apply shadow-lg border-gray-200 transform -translate-y-1;
+}
+
+.taiko-card-featured {
+  @apply bg-gradient-to-br from-white to-gray-50 border-2;
+  border-image: linear-gradient(135deg, #E81899, #FFC236, #6438D6) 1;
+}
+
+/* Enhanced Buttons */
+.taiko-button-primary {
+  @apply bg-taiko-pink text-white font-medium px-6 py-3 rounded-lg transition-all duration-200;
+  background: linear-gradient(135deg, #E81899 0%, #d1167d 100%);
+}
+
+.taiko-button-primary:hover {
+  background: linear-gradient(135deg, #d1167d 0%, #b81470 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(232, 24, 153, 0.3);
+}
+
+.taiko-button-secondary {
+  @apply bg-white text-taiko-pink border-2 border-taiko-pink font-medium px-6 py-3 rounded-lg transition-all duration-200;
+}
+
+.taiko-button-secondary:hover {
+  @apply bg-taiko-pink text-white transform -translate-y-1;
+  box-shadow: 0 8px 25px rgba(232, 24, 153, 0.2);
+}
+
+/* Enhanced Typography */
+.taiko-heading-xl {
+  @apply text-5xl font-bold mb-6;
+  background: linear-gradient(135deg, #E81899 0%, #FFC236 38%, #6438D6 92%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.taiko-heading-lg {
+  @apply text-3xl font-bold mb-4 text-gray-900;
+}
+
+.taiko-text-primary {
+  @apply text-taiko-pink font-semibold;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #E81899 0%, #FFC236 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #d1167d 0%, #e6b32f 100%);
+}
+
+/* Loading & Animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.taiko-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.taiko-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(232, 24, 153, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(232, 24, 153, 0.6); }
+}
+
+.taiko-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Enhanced Tables */
+.taiko-table {
+  @apply w-full bg-white rounded-lg overflow-hidden shadow-sm;
+}
+
+.taiko-table th {
+  @apply bg-gray-50 px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200;
+}
+
+.taiko-table td {
+  @apply px-6 py-4 text-sm text-gray-700 border-b border-gray-100;
+}
+
+.taiko-table tr:hover td {
+  @apply bg-gray-50;
+}
+
+/* Status Indicators */
+.status-success {
+  @apply bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.status-pending {
+  @apply bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.status-failed {
+  @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .taiko-heading-xl {
+    @apply text-3xl;
+  }
+  
+  .taiko-heading-lg {
+    @apply text-2xl;
+  }
+  
+  .taiko-card {
+    @apply mx-4;
+  }
+}
+
+/* Enhanced Focus States */
+.taiko-focus:focus {
+  @apply outline-none ring-2 ring-taiko-pink ring-offset-2;
+}
+
+/* Taiko Colorful Lines Animation */
+.taiko-lines-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.taiko-line {
+  position: absolute;
+  width: 2px;
+  height: 200px;
+  opacity: 0.6;
+  animation: lineFloat 8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.taiko-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Individual line colors and positions */
+.taiko-line-1 {
+  left: 10%;
+  background: linear-gradient(180deg, #E81899, #ff2db3);
+  animation-delay: 0s;
+}
+
+.taiko-line-2 {
+  left: 20%;
+  background: linear-gradient(180deg, #6438D6, #7c4dff);
+  animation-delay: 1s;
+}
+
+.taiko-line-3 {
+  left: 30%;
+  background: linear-gradient(180deg, #FFC236, #ffdd6b);
+  animation-delay: 2s;
+}
+
+.taiko-line-4 {
+  left: 40%;
+  background: linear-gradient(180deg, #00D4B4, #26e6cc);
+  animation-delay: 1.5s;
+}
+
+.taiko-line-5 {
+  left: 50%;
+  background: linear-gradient(180deg, #E81899, #ff2db3);
+  animation-delay: 3s;
+}
+
+.taiko-line-6 {
+  left: 60%;
+  background: linear-gradient(180deg, #8B5CF6, #a855f7);
+  animation-delay: 0.5s;
+}
+
+.taiko-line-7 {
+  left: 70%;
+  background: linear-gradient(180deg, #FFC236, #ffdd6b);
+  animation-delay: 2.5s;
+}
+
+.taiko-line-8 {
+  left: 80%;
+  background: linear-gradient(180deg, #6438D6, #7c4dff);
+  animation-delay: 1s;
+}
+
+.taiko-line-9 {
+  left: 90%;
+  background: linear-gradient(180deg, #E81899, #ff2db3);
+  animation-delay: 4s;
+}
+
+@keyframes lineFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translateY(-20px) scale(1.1) rotate(2deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-40px) scale(0.9) rotate(-1deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-15px) scale(1.05) rotate(1deg);
+    opacity: 0.9;
+  }
+}
+
+/* Radial lines effect */
+.taiko-radial-lines {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.taiko-radial-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 80px;
+  transform-origin: center bottom;
+  opacity: 0.3;
+  animation: radialPulse 4s ease-in-out infinite;
+}
+
+.taiko-radial-line:nth-child(1) { 
+  background: #E81899; 
+  transform: translate(-50%, -100%) rotate(0deg); 
+  animation-delay: 0s; 
+}
+.taiko-radial-line:nth-child(2) { 
+  background: #6438D6; 
+  transform: translate(-50%, -100%) rotate(30deg); 
+  animation-delay: 0.2s; 
+}
+.taiko-radial-line:nth-child(3) { 
+  background: #FFC236; 
+  transform: translate(-50%, -100%) rotate(60deg); 
+  animation-delay: 0.4s; 
+}
+.taiko-radial-line:nth-child(4) { 
+  background: #00D4B4; 
+  transform: translate(-50%, -100%) rotate(90deg); 
+  animation-delay: 0.6s; 
+}
+.taiko-radial-line:nth-child(5) { 
+  background: #E81899; 
+  transform: translate(-50%, -100%) rotate(120deg); 
+  animation-delay: 0.8s; 
+}
+.taiko-radial-line:nth-child(6) { 
+  background: #8B5CF6; 
+  transform: translate(-50%, -100%) rotate(150deg); 
+  animation-delay: 1s; 
+}
+.taiko-radial-line:nth-child(7) { 
+  background: #FFC236; 
+  transform: translate(-50%, -100%) rotate(180deg); 
+  animation-delay: 1.2s; 
+}
+.taiko-radial-line:nth-child(8) { 
+  background: #6438D6; 
+  transform: translate(-50%, -100%) rotate(210deg); 
+  animation-delay: 1.4s; 
+}
+.taiko-radial-line:nth-child(9) { 
+  background: #E81899; 
+  transform: translate(-50%, -100%) rotate(240deg); 
+  animation-delay: 1.6s; 
+}
+.taiko-radial-line:nth-child(10) { 
+  background: #00D4B4; 
+  transform: translate(-50%, -100%) rotate(270deg); 
+  animation-delay: 1.8s; 
+}
+.taiko-radial-line:nth-child(11) { 
+  background: #8B5CF6; 
+  transform: translate(-50%, -100%) rotate(300deg); 
+  animation-delay: 2s; 
+}
+.taiko-radial-line:nth-child(12) { 
+  background: #FFC236; 
+  transform: translate(-50%, -100%) rotate(330deg); 
+  animation-delay: 2.2s; 
+}
+
+@keyframes radialPulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translate(-50%, -100%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -100%) scale(1.2);
+  }
+}
+
+/* Flashy Hero Animations */
+@keyframes flashyPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(232, 24, 153, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(232, 24, 153, 0.8), 0 0 60px rgba(100, 56, 214, 0.4);
+  }
+}
+
+@keyframes colorShift {
+  0% { background: linear-gradient(135deg, #E81899 0%, #6438D6 100%); }
+  50% { background: linear-gradient(135deg, #6438D6 0%, #E81899 100%); }
+  100% { background: linear-gradient(135deg, #E81899 0%, #6438D6 100%); }
+}
+
+@keyframes particleDance {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateY(-10px) rotate(90deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-10px) rotate(270deg);
+    opacity: 1;
+  }
+}
+
+@keyframes ringExpand {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.taiko-hero-logo {
+  animation: flashyPulse 3s ease-in-out infinite, colorShift 8s linear infinite;
+}
+
+.taiko-particle {
+  animation: particleDance 4s ease-in-out infinite;
+}
+
+.taiko-ring {
+  animation: ringExpand 3s ease-out infinite;
+}
+
+/* Block Countdown Animations */
+@keyframes countdownPulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 0 10px rgba(232, 24, 153, 0.5);
+  }
+  50% {
+    transform: scale(1.1);
+    text-shadow: 0 0 20px rgba(232, 24, 153, 0.8);
+  }
+}
+
+@keyframes progressGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(232, 24, 153, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(232, 24, 153, 1), 0 0 30px rgba(100, 56, 214, 0.6);
+  }
+}
+
+@keyframes indicatorBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 1);
+  }
+}
+
+.taiko-countdown-number {
+  animation: countdownPulse 1s ease-in-out infinite;
+}
+
+.taiko-progress-bar {
+  animation: progressGlow 2s ease-in-out infinite;
+}
+
+.taiko-progress-indicator {
+  animation: indicatorBounce 1s ease-in-out infinite;
+}
+
+/* Innovative Liquid Progress Bar Animations */
+@keyframes liquidFlow {
+  0% {
+    background: linear-gradient(90deg, #E81899 0%, #ff4da6 50%, #E81899 100%);
+    transform: translateX(-20px);
+  }
+  50% {
+    background: linear-gradient(90deg, #ff4da6 0%, #E81899 50%, #ff4da6 100%);
+    transform: translateX(0px);
+  }
+  100% {
+    background: linear-gradient(90deg, #E81899 0%, #ff4da6 50%, #E81899 100%);
+    transform: translateX(20px);
+  }
+}
+
+@keyframes shineFlow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes progressGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(232, 24, 153, 0.6), 0 0 20px rgba(232, 24, 153, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(232, 24, 153, 0.9), 0 0 30px rgba(232, 24, 153, 0.5);
+    transform: scale(1.1);
+  }
+}
+
+.taiko-liquid-progress {
+  animation: liquidFlow 3s ease-in-out infinite;
+}
+
+.taiko-shine-flow {
+  animation: shineFlow 2s ease-in-out infinite;
+}
+
+.taiko-progress-glow {
+  animation: progressGlow 2s ease-in-out infinite;
+}
