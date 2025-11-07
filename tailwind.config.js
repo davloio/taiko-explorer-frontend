@@ -17,31 +17,36 @@ module.exports = {
     },
     extend: {
       colors: {
-        // Taiko Brand Colors
+        // Official Taiko Brand Colors (from brand specification)
         taiko: {
-          pink: '#E81899',
-          purple: '#6438D6', 
-          yellow: '#FFC236',
-          gray: '#EFEFEF',
-          dark: '#0B101B',
-          white: '#FFFFFF',
+          japonica: '#D5775E',     // Primary brand color (Coral/Salmon) 
+          cyan: '#2BD3EF',         // Secondary accent (Cyan Blue)
+          white: '#FFFFFF',        // White
+          charcoal: '#313131',     // Mine Shaft (Charcoal Gray)
         },
+        // Legacy colors (backward compatibility)
+        'taiko-pink': '#D5775E',   // Maps to japonica
+        'taiko-purple': '#2BD3EF', // Maps to cyan 
+        'taiko-yellow': '#F59E0B', // Warning color
+        'taiko-gray': '#6b7280',
+        'taiko-dark': '#313131',   // Maps to charcoal
+        'taiko-light-gray': '#f8fafc',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#E81899", // Taiko Pink
+          DEFAULT: "#D5775E", // Taiko Japonica
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#6438D6", // Taiko Purple
+          DEFAULT: "#2BD3EF", // Taiko Cyan
           foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#FFC236", // Taiko Yellow
-          foreground: "#0B101B",
+          DEFAULT: "#F59E0B", // Warning Yellow
+          foreground: "#313131",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -66,8 +71,9 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Inter', 'system-ui', 'sans-serif'], // We'll use Inter instead of ClashDisplay for now
+        sans: ['Public Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['Public Sans', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['Roboto Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Consolas', 'monospace'],
       },
       keyframes: {
         "accordion-down": {
@@ -94,8 +100,9 @@ module.exports = {
         "slide-in": "slide-in 0.3s ease-out",
       },
       backgroundImage: {
-        'taiko-gradient': 'linear-gradient(135deg, #E81899 0%, #FFC236 38%, #6438D6 92%)',
-        'taiko-gradient-subtle': 'linear-gradient(135deg, #E81899 0%, #6438D6 100%)',
+        'taiko-gradient': 'linear-gradient(135deg, #D5775E 0%, #2BD3EF 100%)',
+        'taiko-gradient-subtle': 'linear-gradient(135deg, #D5775E 0%, #2BD3EF 50%, #D5775E 100%)',
+        'taiko-hero-gradient': 'linear-gradient(135deg, #D5775E 0%, #2BD3EF 50%, #D5775E 100%)',
       }
     },
   },

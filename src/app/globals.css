@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,31 +8,37 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 225 9% 15%; /* Darker text for better contrast */
+    --foreground: 225 9% 15%;
     --card: 0 0% 100%;
     --card-foreground: 225 9% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 225 9% 15%;
-    --primary: 340 82% 52%; /* Taiko Pink #E81899 */
+    --primary: 13 59% 60%; /* Taiko Japonica #D5775E */
     --primary-foreground: 0 0% 100%;
-    --secondary: 252 56% 57%; /* Taiko Purple #6438D6 */
+    --secondary: 188 83% 54%; /* Taiko Cyan #2BD3EF */
     --secondary-foreground: 0 0% 100%;
-    --muted: 220 13% 97%; /* Lighter gray background */
+    --muted: 220 13% 97%;
     --muted-foreground: 225 9% 45%;
-    --accent: 45 93% 58%; /* Taiko Yellow #FFC236 */
-    --accent-foreground: 225 9% 15%;
+    --accent: 45 93% 50%; /* Warning Yellow */
+    --accent-foreground: 0 0% 19%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 340 82% 52%; /* Taiko Pink */
+    --ring: 13 59% 60%; /* Taiko Japonica */
     --radius: 0.75rem;
     
-    /* Custom Taiko variables */
-    --taiko-pink: #E81899;
-    --taiko-purple: #6438D6;
-    --taiko-yellow: #FFC236;
-    --taiko-dark: #1a1a1a;
+    /* Official Taiko Brand Variables */
+    --taiko-japonica: #D5775E;
+    --taiko-cyan: #2BD3EF;
+    --taiko-white: #FFFFFF;
+    --taiko-charcoal: #313131;
+    
+    /* Legacy variables for backward compatibility */
+    --taiko-pink: #D5775E;
+    --taiko-purple: #2BD3EF;
+    --taiko-yellow: #F59E0B;
+    --taiko-dark: #313131;
     --taiko-gray: #6b7280;
     --taiko-light-gray: #f8fafc;
   }
@@ -65,7 +72,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -73,7 +80,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Public Sans', sans-serif;
     font-weight: 700;
     line-height: 1.2;
   }
@@ -615,3 +622,66 @@
 .taiko-progress-glow {
   animation: progressGlow 2s ease-in-out infinite;
 }
+
+/* New Taiko Countdown Glow Effect */
+@keyframes countdownGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px rgba(213, 119, 94, 0.3),
+      0 0 10px rgba(213, 119, 94, 0.2),
+      0 0 15px rgba(213, 119, 94, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 
+      0 0 10px rgba(43, 211, 239, 0.4),
+      0 0 20px rgba(43, 211, 239, 0.3),
+      0 0 30px rgba(43, 211, 239, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+.taiko-countdown-glow {
+  animation: countdownGlow 3s ease-in-out infinite;
+}
+
+/* Update countdown glow to use only pink tones */
+@keyframes countdownGlowPink {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px rgba(213, 119, 94, 0.3),
+      0 0 10px rgba(213, 119, 94, 0.2),
+      0 0 15px rgba(213, 119, 94, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 
+      0 0 10px rgba(232, 70, 155, 0.4),
+      0 0 20px rgba(232, 70, 155, 0.3),
+      0 0 30px rgba(232, 70, 155, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+/* Update Taiko Brand Colors */
+:root {
+  /* Official Taiko Brand Colors */
+  --taiko-japonica: #D5775E;
+  --taiko-cyan: #2BD3EF;
+  --taiko-white: #FFFFFF;
+  --taiko-charcoal: #313131;
+  
+  /* Extended Explorer Palette */
+  --taiko-success: #10B981;
+  --taiko-error: #EF4444;
+  --taiko-warning: #F59E0B;
+  --taiko-info: #3B82F6;
+}
+
+/* Updated Color Classes */
+.text-taiko-japonica { color: #D5775E; }
+.text-taiko-cyan { color: #2BD3EF; }
+.bg-taiko-japonica { background-color: #D5775E; }
+.bg-taiko-cyan { background-color: #2BD3EF; }
+.border-taiko-japonica { border-color: #D5775E; }
+.border-taiko-cyan { border-color: #2BD3EF; }
