@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: ["class", '[data-theme="dark"]'],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -103,8 +106,15 @@ module.exports = {
         'taiko-gradient': 'linear-gradient(135deg, #D5775E 0%, #2BD3EF 100%)',
         'taiko-gradient-subtle': 'linear-gradient(135deg, #D5775E 0%, #2BD3EF 50%, #D5775E 100%)',
         'taiko-hero-gradient': 'linear-gradient(135deg, #D5775E 0%, #2BD3EF 50%, #D5775E 100%)',
+        'taiko-pink-gradient': 'linear-gradient(135deg, #D5775E 0%, #E8469B 50%, #D5775E 100%)',
+        'taiko-pink-bg': '#D5775E',
       }
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function({ addVariant }) {
+      addVariant('taiko-mode', '.taiko-mode &')
+    }
+  ],
 }

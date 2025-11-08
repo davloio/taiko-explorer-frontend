@@ -623,6 +623,156 @@
   animation: progressGlow 2s ease-in-out infinite;
 }
 
+/* New Innovative Loader Animations */
+@keyframes morphBackground {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    border-radius: 24px;
+  }
+  50% {
+    transform: scale(1.05) rotate(2deg);
+    border-radius: 32px;
+  }
+}
+
+@keyframes countdownBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes liquidWave {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes waveAnimation {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes progressShine {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+@keyframes progressBall {
+  0%, 100% {
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 4px 8px rgba(232, 70, 155, 0.3);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 12px rgba(232, 70, 155, 0.5);
+  }
+}
+
+@keyframes blockComplete {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes blockCurrent {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(232, 70, 155, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(232, 70, 155, 0.7);
+  }
+}
+
+@keyframes blockIcon {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+@keyframes miningPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* Apply animations */
+.taiko-morph-bg {
+  animation: morphBackground 4s ease-in-out infinite;
+}
+
+.taiko-countdown-bounce {
+  animation: countdownBounce 1s ease-in-out infinite;
+}
+
+.taiko-liquid-wave {
+  background-size: 200% 100%;
+  animation: liquidWave 3s ease-in-out infinite;
+}
+
+.taiko-wave-animation {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: waveAnimation 2s ease-in-out infinite;
+}
+
+.taiko-progress-shine {
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+.taiko-progress-ball {
+  animation: progressBall 2s ease-in-out infinite;
+}
+
+.taiko-block-complete {
+  animation: blockComplete 0.5s ease-out forwards;
+}
+
+.taiko-block-current {
+  animation: blockCurrent 1s ease-in-out infinite;
+}
+
+.taiko-block-icon {
+  animation: blockIcon 3s ease-in-out infinite;
+}
+
+.taiko-mining-pulse {
+  animation: miningPulse 1.5s ease-in-out infinite;
+}
+
 /* New Taiko Countdown Glow Effect */
 @keyframes countdownGlow {
   0%, 100% {

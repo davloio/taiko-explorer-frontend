@@ -30,7 +30,8 @@ export default function BlocksPage() {
   const blocks = allBlocks.slice(startIndex, endIndex);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-white taiko-mode:!bg-[#C2185B]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
@@ -276,6 +277,7 @@ export default function BlocksPage() {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

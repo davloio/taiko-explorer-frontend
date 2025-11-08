@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, Zap } from 'lucide-react';
+import { Activity, Zap, Layers, Timer } from 'lucide-react';
 
 export function BlockCountdown() {
   const [countdown, setCountdown] = useState(12);
@@ -24,151 +24,75 @@ export function BlockCountdown() {
     return () => clearInterval(interval);
   }, [countdown]);
 
-  // Calculate circle progress
-  const radius = 120;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
   return (
-    <div className="relative bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 overflow-hidden">
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#D5775E]/5 via-[#E8469B]/5 to-[#D5775E]/5"></div>
-      
-      {/* Floating particles */}
-      <div className="absolute top-6 right-8 w-2 h-2 bg-[#D5775E]/40 rounded-full animate-ping" style={{ animationDelay: '0s' }}></div>
-      <div className="absolute top-12 left-6 w-1.5 h-1.5 bg-[#E8469B]/40 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute bottom-8 right-12 w-1 h-1 bg-[#D5775E]/30 rounded-full animate-ping" style={{ animationDelay: '2s' }}></div>
-      <div className="absolute bottom-16 left-16 w-2 h-2 bg-[#E8469B]/30 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+    <div className="relative bg-gradient-to-br from-white via-pink-50/30 to-white taiko-mode:from-white/20 taiko-mode:via-white/10 taiko-mode:to-white/20 taiko-mode:backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-100/50 taiko-mode:border-white/30 overflow-hidden">
+      {/* Animated background with moving shapes */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-4 right-8 w-20 h-20 bg-gradient-to-br from-[#D5775E]/10 to-[#E8469B]/10 rounded-full animate-pulse" style={{ animationDuration: '3s' }}></div>
+        <div className="absolute bottom-6 left-4 w-16 h-16 bg-gradient-to-br from-[#E8469B]/10 to-[#D5775E]/10 rounded-full animate-pulse" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
+        <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-gradient-to-br from-[#D5775E]/5 to-[#E8469B]/5 rounded-full animate-pulse" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
+      </div>
       
       {/* Main content */}
-      <div className="relative z-10 text-center">
-        {/* Title */}
-        <div className="mb-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">Next Block Production</h3>
-          <p className="text-gray-600 font-medium">Taiko Layer 2 Network</p>
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#D5775E] to-[#E8469B] rounded-2xl flex items-center justify-center shadow-lg taiko-block-icon">
+              <img 
+                src="/taiko-icon.webp" 
+                alt="Taiko" 
+                className="w-7 h-7 object-cover rounded-xl"
+              />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 taiko-mode:text-white">Next Block</h3>
+          </div>
+          <p className="text-gray-600 taiko-mode:text-white/90 font-medium">Taiko Layer 2 Network</p>
         </div>
 
-        {/* Circular Progress */}
-        <div className="relative mb-8 flex justify-center">
-          <div className="relative w-64 h-64">
-            {/* Background Circle */}
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 256 256">
-              <circle
-                cx="128"
-                cy="128"
-                r={radius}
-                stroke="rgba(229, 231, 235, 0.3)"
-                strokeWidth="8"
-                fill="transparent"
-              />
-              
-              {/* Progress Circle */}
-              <circle
-                cx="128"
-                cy="128"
-                r={radius}
-                stroke="url(#progressGradient)"
-                strokeWidth="8"
-                fill="transparent"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                className="transition-all duration-1000 ease-out"
-                style={{
-                  filter: 'drop-shadow(0 0 8px rgba(213, 119, 94, 0.4))'
+        {/* Countdown Display */}
+        <div className="text-center mb-8">
+          <div className="relative inline-block">
+            {/* Countdown number with morphing background */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#D5775E]/20 to-[#E8469B]/20 rounded-3xl taiko-morph-bg"></div>
+              <div className="relative px-8 py-4">
+                <span className="text-7xl font-black text-[#C2185B] taiko-mode:text-white taiko-countdown-bounce">
+                  {countdown}
+                </span>
+                <div className="text-lg text-gray-600 taiko-mode:text-white/90 font-semibold mt-1">seconds</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        {/* Block Visualization */}
+        <div className="grid grid-cols-12 gap-1 mb-8">
+          {[...Array(12)].map((_, i) => {
+            const isPast = i < (12 - countdown);
+            const isCurrent = i === (12 - countdown);
+            
+            return (
+              <div
+                key={i}
+                className={`h-4 rounded-lg transition-all duration-500 ${
+                  isPast 
+                    ? 'bg-gradient-to-r from-[#D5775E] to-[#E8469B] shadow-sm taiko-block-complete' 
+                    : isCurrent
+                    ? 'bg-gradient-to-r from-[#E8469B] to-[#D5775E] taiko-block-current shadow-md'
+                    : 'bg-gray-200'
+                }`}
+                style={{ 
+                  animationDelay: `${i * 0.1}s`,
+                  transform: isCurrent ? 'scaleY(1.5)' : 'scaleY(1)'
                 }}
               />
-              
-              {/* Gradient Definition */}
-              <defs>
-                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#D5775E" />
-                  <stop offset="50%" stopColor="#E8469B" />
-                  <stop offset="100%" stopColor="#D5775E" />
-                </linearGradient>
-              </defs>
-            </svg>
-
-            {/* Center Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              {/* Icon */}
-              <div className="w-16 h-16 bg-gradient-to-r from-[#D5775E] to-[#E8469B] rounded-2xl flex items-center justify-center mb-4 shadow-lg animate-pulse">
-                <img 
-                  src="/taiko-icon.webp" 
-                  alt="Taiko" 
-                  className="w-10 h-10 object-cover rounded-xl"
-                />
-              </div>
-              
-              {/* Countdown */}
-              <div className="text-6xl font-bold text-gray-800 mb-2" style={{ animation: 'countdownGlowPink 3s ease-in-out infinite' }}>
-                {countdown}
-              </div>
-              
-              {/* Seconds label */}
-              <div className="text-lg text-gray-600 font-medium">seconds</div>
-            </div>
-
-            {/* Animated dots around circle */}
-            <div className="absolute inset-0">
-              {[...Array(12)].map((_, i) => {
-                const angle = (i * 30) - 90; // Start from top
-                const x = 128 + (radius + 20) * Math.cos(angle * Math.PI / 180);
-                const y = 128 + (radius + 20) * Math.sin(angle * Math.PI / 180);
-                const isActive = i < (12 - countdown);
-                
-                return (
-                  <div
-                    key={i}
-                    className={`absolute w-3 h-3 rounded-full transition-all duration-500 ${
-                      isActive 
-                        ? 'bg-[#D5775E] shadow-lg animate-pulse' 
-                        : 'bg-gray-200'
-                    }`}
-                    style={{
-                      left: `${x - 6}px`,
-                      top: `${y - 6}px`,
-                      transform: 'translate(-50%, -50%)'
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-6 text-center">
-          <div className="bg-white/60 rounded-2xl p-4 border border-white/30 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-2">
-              <Activity className="h-5 w-5 text-[#D5775E] mr-2" />
-              <span className="text-lg font-bold" style={{ color: '#D5775E' }}>~12s</span>
-            </div>
-            <div className="text-sm text-gray-600 font-medium">Block Time</div>
-          </div>
-          
-          <div className="bg-white/60 rounded-2xl p-4 border border-white/30 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-2">
-              <Zap className="h-5 w-5 text-[#E8469B] mr-2" />
-              <span className="text-lg font-bold" style={{ color: '#E8469B' }}>{Math.floor(progress)}%</span>
-            </div>
-            <div className="text-sm text-gray-600 font-medium">Progress</div>
-          </div>
-          
-          <div className="bg-white/60 rounded-2xl p-4 border border-white/30 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-2">
-              <div className="w-5 h-5 bg-gradient-to-r from-[#D5775E] to-[#E8469B] rounded-md mr-2"></div>
-              <span className="text-lg font-bold text-gray-800">#{currentBlock}</span>
-            </div>
-            <div className="text-sm text-gray-600 font-medium">Next Block</div>
-          </div>
-        </div>
 
-        {/* Pulse animation for "mining" */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600">
-          <div className="w-2 h-2 bg-[#D5775E] rounded-full animate-pulse"></div>
-          <span>Mining next block...</span>
-        </div>
       </div>
     </div>
   );
