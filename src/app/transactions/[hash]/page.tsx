@@ -1,13 +1,11 @@
 'use client';
 
 import { useQuery } from '@apollo/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useTheme } from '@/contexts/ThemeContext';
 import { GET_TRANSACTION_BY_HASH } from '@/lib/graphql-queries';
-import { formatEther, formatTimestamp, truncateAddress } from '@/lib/utils';
 import Link from 'next/link';
-import { ArrowLeftIcon, CopyIcon, ExternalLinkIcon, ArrowRightIcon } from 'lucide-react';
+import { ArrowLeft, Hash, Clock, Activity, CheckCircle, XCircle, Copy } from 'lucide-react';
+import { useState } from 'react';
 
 interface TransactionDetailPageProps {
   params: {
@@ -16,26 +14,49 @@ interface TransactionDetailPageProps {
 }
 
 export default function TransactionDetailPage({ params }: TransactionDetailPageProps) {
+  const { theme } = useTheme();
+  const [copySuccess, setCopySuccess] = useState(false);
+  
   const { data, loading, error } = useQuery(GET_TRANSACTION_BY_HASH, {
     variables: { hash: params.hash }
   });
 
   const transaction = data?.transaction;
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text');
+    }
+  };
+
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp * 1000).toLocaleString();
+  };
+
+  const truncateHash = (hash: string) => {
+    return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
+  };
+
+  const formatValue = (value: string) => {
+    const eth = parseFloat(value) / 1e18;
+    if (eth === 0) return '0 ETH';
+    if (eth < 0.001) return '<0.001 ETH';
+    return `${eth.toFixed(6)} ETH`;
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-96 mb-8"></div>
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
+      <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className={`text-center py-20 ${
+            theme === 'pink' ? 'text-white' : 'text-gray-900'
+          }`}>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current mx-auto mb-4"></div>
+            Loading transaction details...
           </div>
         </div>
       </div>
@@ -44,286 +65,367 @@ export default function TransactionDetailPage({ params }: TransactionDetailPageP
 
   if (error || !transaction) {
     return (
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Transaction Not Found</h1>
-          <p className="text-gray-600 mb-8">The transaction {params.hash} could not be found.</p>
-          <Button asChild>
-            <Link href="/transactions">
-              <ArrowLeftIcon className="mr-2 h-4 w-4" />
-              Back to Transactions
-            </Link>
-          </Button>
+      <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className={`text-center py-20 ${
+            theme === 'pink' ? 'text-white' : 'text-gray-900'
+          }`}>
+            <h1 className="text-2xl font-bold mb-4">Transaction Not Found</h1>
+            <p>Could not load transaction: {params.hash}</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-4 mb-4">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/transactions">
-              <ArrowLeftIcon className="mr-2 h-4 w-4" />
-              Back to Transactions
-            </Link>
-          </Button>
-        </div>
+    <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          <span className="taiko-gradient-text">Transaction Details</span>
-        </h1>
-        <p className="text-gray-600 break-all">
-          {transaction.hash}
-        </p>
-      </div>
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Link 
+            href="/transactions"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
+              theme === 'pink' 
+                ? 'bg-white/20 text-white hover:bg-white/30' 
+                : 'bg-white text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Transactions
+          </Link>
+        </div>
 
-      {/* Status Badge */}
-      <div className="mb-8">
-        <Badge 
-          variant={transaction.status === 'SUCCESS' ? 'success' : transaction.status === 'FAILED' ? 'error' : 'pending'}
-          className="text-lg px-4 py-2"
-        >
-          {transaction.status}
-        </Badge>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Transaction Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Transaction Header */}
+        <div className={`rounded-2xl p-6 shadow-lg border mb-8 ${
+          theme === 'pink' 
+            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
+            : 'bg-white border-gray-200'
+        }`}>
+          <div className="flex items-center gap-3 mb-4">
+            <Hash className={`h-6 w-6 ${
+              theme === 'pink' ? 'text-white' : 'text-gray-900'
+            }`} />
+            <h1 className={`text-2xl font-bold ${
+              theme === 'pink' ? 'text-white' : 'text-gray-900'
+            }`}>
+              Transaction Details
+            </h1>
+            {transaction.isSuccessful ? (
+              <CheckCircle className="h-6 w-6 text-green-500" />
+            ) : (
+              <XCircle className="h-6 w-6 text-red-500" />
+            )}
+          </div>
+          
+          <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium text-gray-600">Transaction Hash</label>
-              <div className="flex items-center space-x-2">
-                <p className="text-sm font-mono bg-gray-100 p-2 rounded flex-1 break-all">
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Transaction Hash
+              </label>
+              <div className="flex items-center gap-3">
+                <div className={`font-mono text-sm break-all ${
+                  theme === 'pink' ? 'text-white' : 'text-gray-900'
+                }`}>
                   {transaction.hash}
-                </p>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => copyToClipboard(transaction.hash)}
+                </div>
+                <button
+                  onClick={() => handleCopy(transaction.hash)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    theme === 'pink' 
+                      ? 'bg-white/20 hover:bg-white/30 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                  }`}
                 >
-                  <CopyIcon className="h-4 w-4" />
-                </Button>
+                  <Copy className="h-4 w-4" />
+                </button>
               </div>
+              {copySuccess && (
+                <span className={`text-xs ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  Copied!
+                </span>
+              )}
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Status
+              </label>
+              <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                transaction.isSuccessful
+                  ? 'bg-green-500/20 text-green-300'
+                  : 'bg-red-500/20 text-red-300'
+              }`}>
+                {transaction.isSuccessful ? (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Success
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-4 w-4" />
+                    Failed
+                  </>
+                )}
+              </span>
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Direction
+              </label>
+              <span className={`inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full text-sm font-semibold min-w-[80px] bg-blue-500/20 text-blue-300`}>
+                {transaction.direction?.toUpperCase() === 'IN' ? 'in' : transaction.direction?.toUpperCase() === 'OUT' ? 'out' : (transaction.direction?.toUpperCase() === 'INSIDE' || transaction.direction?.toUpperCase() === 'INTERNAL') ? 'internal' : transaction.direction?.toLowerCase()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Transaction Info Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          
+          {/* Block Info */}
+          <div className={`rounded-2xl p-6 shadow-lg border ${
+            theme === 'pink' 
+              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
+              : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center gap-3 mb-3">
+              <Activity className={`h-5 w-5 ${
+                theme === 'pink' ? 'text-white' : 'text-gray-600'
+              }`} />
+              <h3 className={`font-semibold ${
+                theme === 'pink' ? 'text-white' : 'text-gray-900'
+              }`}>
+                Block Information
+              </h3>
             </div>
             
-            <div>
-              <label className="text-sm font-medium text-gray-600">Status</label>
-              <div className="mt-1">
-                <Badge variant={transaction.status === 'SUCCESS' ? 'success' : transaction.status === 'FAILED' ? 'error' : 'pending'}>
-                  {transaction.status}
-                </Badge>
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Block Number</label>
-              <div className="flex items-center space-x-2">
-                <Link 
+            <div className="space-y-3">
+              <div>
+                <label className={`text-sm font-medium ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  Block Number
+                </label>
+                <Link
                   href={`/blocks/${transaction.blockNumber}`}
-                  className="text-lg font-semibold text-taiko-pink hover:text-taiko-purple"
+                  className={`block text-lg font-bold hover:underline ${
+                    theme === 'pink' ? 'text-white' : 'text-gray-900'
+                  }`}
                 >
                   #{transaction.blockNumber}
                 </Link>
-                <Link href={`/blocks/${transaction.blockNumber}`}>
-                  <ExternalLinkIcon className="h-4 w-4 text-taiko-pink" />
-                </Link>
               </div>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Transaction Index</label>
-              <p className="text-lg">{transaction.transactionIndex}</p>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Timestamp</label>
-              <p className="text-lg">{formatTimestamp(transaction.timestamp)}</p>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Nonce</label>
-              <p className="text-lg font-mono">{transaction.nonce}</p>
-            </div>
-          </CardContent>
-        </Card>
+              
+              <div>
+                <label className={`text-sm font-medium ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  Transaction Index
+                </label>
+                <p className={`text-lg font-bold ${
+                  theme === 'pink' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {transaction.transactionIndex || 'N/A'}
+                </p>
+              </div>
 
-        {/* From/To Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>From / To</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-600">From</label>
-              <div className="flex items-center space-x-2">
-                <Link 
-                  href={`/address/${transaction.from}`}
-                  className="text-sm font-mono bg-gray-100 p-2 rounded flex-1 truncate hover:bg-gray-200 transition-colors text-taiko-pink"
-                >
-                  {transaction.from}
-                </Link>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => copyToClipboard(transaction.from)}
-                >
-                  <CopyIcon className="h-4 w-4" />
-                </Button>
-                <Link href={`/address/${transaction.from}`}>
-                  <ExternalLinkIcon className="h-4 w-4 text-taiko-pink" />
-                </Link>
+              <div>
+                <label className={`text-sm font-medium ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  Timestamp
+                </label>
+                <p className={`text-lg font-bold ${
+                  theme === 'pink' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {transaction.timestamp ? formatDate(transaction.timestamp) : 'N/A'}
+                </p>
               </div>
             </div>
-            
-            <div className="flex justify-center">
-              <ArrowRightIcon className="h-6 w-6 text-gray-400" />
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">To</label>
-              <div className="flex items-center space-x-2">
-                <Link 
-                  href={`/address/${transaction.to}`}
-                  className="text-sm font-mono bg-gray-100 p-2 rounded flex-1 truncate hover:bg-gray-200 transition-colors text-taiko-pink"
-                >
-                  {transaction.to}
-                </Link>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => copyToClipboard(transaction.to)}
-                >
-                  <CopyIcon className="h-4 w-4" />
-                </Button>
-                <Link href={`/address/${transaction.to}`}>
-                  <ExternalLinkIcon className="h-4 w-4 text-taiko-pink" />
-                </Link>
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Value</label>
-              <p className="text-2xl font-bold taiko-gradient-text">
-                {formatEther(transaction.value)} ETH
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
 
-      {/* Gas and Fee Information */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>Gas and Fee Information</CardTitle>
-        </CardHeader>
-        <CardContent>
+          {/* Transfer Info */}
+          <div className={`rounded-2xl p-6 shadow-lg border ${
+            theme === 'pink' 
+              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
+              : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center gap-3 mb-3">
+              <Hash className={`h-5 w-5 ${
+                theme === 'pink' ? 'text-white' : 'text-gray-600'
+              }`} />
+              <h3 className={`font-semibold ${
+                theme === 'pink' ? 'text-white' : 'text-gray-900'
+              }`}>
+                Transfer Information
+              </h3>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className={`text-sm font-medium ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  From Address
+                </label>
+                <Link
+                  href={`/addresses/${transaction.fromAddress}`}
+                  className={`block font-mono text-sm hover:underline ${
+                    theme === 'pink' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
+                  {truncateHash(transaction.fromAddress)}
+                </Link>
+              </div>
+              
+              <div>
+                <label className={`text-sm font-medium ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  To Address
+                </label>
+                <Link
+                  href={`/addresses/${transaction.toAddress}`}
+                  className={`block font-mono text-sm hover:underline ${
+                    theme === 'pink' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
+                  {truncateHash(transaction.toAddress)}
+                </Link>
+              </div>
+
+              <div>
+                <label className={`text-sm font-medium ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  Value
+                </label>
+                <p className={`text-2xl font-bold ${
+                  theme === 'pink' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  {transaction.valueInEth ? `${parseFloat(transaction.valueInEth).toFixed(6)} ETH` : '0 ETH'}
+                </p>
+                <p className={`text-sm ${
+                  theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+                }`}>
+                  {transaction.value ? `${transaction.value} Wei` : '0 Wei'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Gas and Fees */}
+        <div className={`rounded-2xl p-6 shadow-lg border ${
+          theme === 'pink' 
+            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
+            : 'bg-white border-gray-200'
+        }`}>
+          <h3 className={`text-xl font-bold mb-6 ${
+            theme === 'pink' ? 'text-white' : 'text-gray-900'
+          }`}>
+            Gas and Fee Information
+          </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <label className="text-sm font-medium text-gray-600">Gas Used</label>
-              <p className="text-lg font-semibold">{transaction.gasUsed.toLocaleString()}</p>
-              <p className="text-sm text-gray-500">
-                {((transaction.gasUsed / transaction.gas) * 100).toFixed(2)}% of limit
-              </p>
-            </div>
             
             <div>
-              <label className="text-sm font-medium text-gray-600">Gas Limit</label>
-              <p className="text-lg font-semibold">{transaction.gas.toLocaleString()}</p>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Gas Price</label>
-              <p className="text-lg font-semibold">{transaction.gasPrice.toLocaleString()} Wei</p>
-              <p className="text-sm text-gray-500">
-                {formatEther(transaction.gasPrice)} ETH
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Gas Used
+              </label>
+              <p className={`text-lg font-semibold ${
+                theme === 'pink' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {transaction.gasUsed?.toLocaleString() || 'N/A'}
               </p>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium text-gray-600">Transaction Fee</label>
-              <p className="text-lg font-semibold text-taiko-pink">
-                {formatEther(transaction.gasPrice * transaction.gasUsed)} ETH
-              </p>
-            </div>
-          </div>
-          
-          <div className="mt-6">
-            <label className="text-sm font-medium text-gray-600 block mb-2">Gas Usage Progress</label>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-taiko-gradient h-3 rounded-full transition-all duration-300"
-                style={{ width: `${(transaction.gasUsed / transaction.gas) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Additional Details */}
-      {(transaction.input && transaction.input !== '0x') && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Input Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <p className="text-sm font-mono break-all">{transaction.input}</p>
-            </div>
-            <div className="flex justify-end mt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => copyToClipboard(transaction.input)}
-              >
-                <CopyIcon className="h-4 w-4 mr-2" />
-                Copy Input Data
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Receipt Information */}
-      {transaction.logs && transaction.logs.length > 0 && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Event Logs ({transaction.logs.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {transaction.logs.map((log: any, index: number) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-gray-600">Log {index}</span>
-                    <Badge variant="secondary">{log.topics.length} topics</Badge>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="font-medium">Address:</span>
-                      <Link href={`/address/${log.address}`} className="ml-2 text-taiko-pink hover:text-taiko-purple font-mono">
-                        {truncateAddress(log.address)}
-                      </Link>
-                    </div>
-                    <div>
-                      <span className="font-medium">Data:</span>
-                      <p className="font-mono text-xs bg-gray-100 p-2 rounded mt-1 break-all">
-                        {log.data}
-                      </p>
-                    </div>
+              <div className={`text-sm mt-2 ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                {(transaction.gasLimit && transaction.gasUsed) ? 
+                  `${((transaction.gasUsed / transaction.gasLimit) * 100).toFixed(2)}% of limit` : 
+                  'Percentage unknown'
+                }
+              </div>
+              
+              {/* Simple progress bar without rainbow */}
+              {transaction.gasUsed && transaction.gasLimit && (
+                <div className="mt-3">
+                  <div className={`w-full h-2 rounded-full ${
+                    theme === 'pink' ? 'bg-white/20' : 'bg-gray-200'
+                  }`}>
+                    <div
+                      className={`h-2 rounded-full ${
+                        theme === 'pink' ? 'bg-white' : 'bg-[#C2185B]'
+                      }`}
+                      style={{ 
+                        width: `${Math.min((transaction.gasUsed / transaction.gasLimit) * 100, 100)}%` 
+                      }}
+                    ></div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          </CardContent>
-        </Card>
-      )}
+
+            <div>
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Gas Limit
+              </label>
+              <p className={`text-lg font-semibold ${
+                theme === 'pink' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {transaction.gasLimit?.toLocaleString() || 'N/A'}
+              </p>
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Gas Price
+              </label>
+              <p className={`text-lg font-semibold ${
+                theme === 'pink' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {transaction.gasPrice?.toLocaleString() || 'N/A'} Wei
+              </p>
+            </div>
+
+            <div>
+              <label className={`text-sm font-medium ${
+                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
+              }`}>
+                Transaction Fee
+              </label>
+              <p className={`text-lg font-semibold ${
+                theme === 'pink' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {transaction.transactionFeeInEth ? 
+                  `${parseFloat(transaction.transactionFeeInEth).toFixed(8)} ETH` : 
+                  'N/A'
+                }
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
