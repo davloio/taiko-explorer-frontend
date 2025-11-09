@@ -18,7 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        taiko: "bg-taiko-gradient text-white hover:opacity-90 transition-opacity",
+        taiko: "bg-[#C2185B] text-white hover:bg-[#A91350] transition-colors",
         "taiko-outline": "border-2 border-taiko-pink text-taiko-pink hover:bg-taiko-pink hover:text-white",
       },
       size: {
