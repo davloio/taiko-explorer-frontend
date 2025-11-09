@@ -2,17 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { Activity, Zap, Layers, Timer } from 'lucide-react';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 export function BlockCountdown() {
   const [countdown, setCountdown] = useState(12);
   const [progress, setProgress] = useState(0);
   const [currentBlock, setCurrentBlock] = useState(1);
+  const { lastBlock, isConnected } = useWebSocket();
+
+  // Reset countdown when new block arrives
+  useEffect(() => {
+    if (lastBlock && isConnected) {
+      setCurrentBlock(lastBlock.number + 1);
+      setCountdown(12); // Reset to 12 seconds for new block
+      console.log('🔄 New block detected, resetting countdown:', lastBlock.number);
+    }
+  }, [lastBlock, isConnected]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          setCurrentBlock(b => b + 1);
+          // Only auto-increment if not connected to WebSocket
+          if (!isConnected) {
+            setCurrentBlock(b => b + 1);
+          }
           return 12;
         }
         return prev - 1;
@@ -22,7 +36,7 @@ export function BlockCountdown() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [countdown]);
+  }, [countdown, isConnected]);
 
   return (
     <div className="relative bg-gradient-to-br from-white via-pink-50/30 to-white taiko-mode:from-white/20 taiko-mode:via-white/10 taiko-mode:to-white/20 taiko-mode:backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-100/50 taiko-mode:border-white/30 overflow-hidden">
@@ -40,8 +54,8 @@ export function BlockCountdown() {
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="w-12 h-12 bg-gradient-to-br from-[#D5775E] to-[#E8469B] rounded-2xl flex items-center justify-center shadow-lg taiko-block-icon">
               <img 
-                src="/taiko-icon.webp" 
-                alt="Taiko" 
+                src="/Taiko Labs Logo.jpeg" 
+                alt="Taiko Labs" 
                 className="w-7 h-7 object-cover rounded-xl"
               />
             </div>
