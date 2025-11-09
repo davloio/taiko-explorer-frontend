@@ -5,6 +5,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbars globally */
+html {
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
