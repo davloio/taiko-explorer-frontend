@@ -53,7 +53,10 @@ export const GET_STATS = gql`
   query GetStats {
     stats {
       totalBlocks
+      latestBlockNumber
       totalTransactions
+      totalAddresses
+      avgBlockTime
     }
   }
 `;
@@ -103,6 +106,7 @@ export const GET_TRANSACTION_BY_HASH = gql`
       toAddress
       value
       gasUsed
+      gasLimit
       gasPrice
       status
       timestamp
@@ -110,13 +114,14 @@ export const GET_TRANSACTION_BY_HASH = gql`
       transactionFeeInEth
       isSuccessful
       transactionIndex
+      direction
     }
   }
 `;
 
 export const GET_TRANSACTIONS = gql`
-  query GetTransactions($offset: Int, $limit: Int) {
-    transactions(offset: $offset, limit: $limit, orderDesc: true) {
+  query GetTransactions($offset: Int, $limit: Int, $statusFilter: String, $directionFilter: String) {
+    transactions(offset: $offset, limit: $limit, orderDesc: true, statusFilter: $statusFilter, directionFilter: $directionFilter) {
       transactions {
         hash
         blockNumber
@@ -128,8 +133,28 @@ export const GET_TRANSACTIONS = gql`
         status
         timestamp
         valueInEth
+        direction
       }
       totalCount
+    }
+  }
+`;
+
+// Transaction count queries
+export const GET_TRANSACTION_COUNTS_BY_STATUS = gql`
+  query GetTransactionCountsByStatus {
+    transactionCountsByStatus {
+      status
+      count
+    }
+  }
+`;
+
+export const GET_TRANSACTION_COUNTS_BY_DIRECTION = gql`
+  query GetTransactionCountsByDirection {
+    transactionCountsByDirection {
+      direction
+      count
     }
   }
 `;
@@ -155,6 +180,117 @@ export const UNIVERSAL_SEARCH = gql`
       address
       totalTransactions
       totalVolumeInEth
+    }
+  }
+`;
+
+// Address Queries
+export const GET_TOP_ADDRESSES = gql`
+  query GetTopAddresses {
+    topAddressesByVolume(limit: 10) {
+      address
+      totalTransactions
+      totalVolumeInEth
+      activityScore
+    }
+    topAddressesByActivity(limit: 10) {
+      address
+      totalTransactions
+      uniqueCounterparties
+      activityScore
+    }
+  }
+`;
+
+export const GET_ADDRESS_STATS = gql`
+  query GetAddressStats($address: String!) {
+    addressStats(address: $address) {
+      address
+      totalTransactions
+      totalSentTransactions
+      totalReceivedTransactions
+      gasUsed
+      uniqueCounterparties
+      contractDeployments
+      firstSeenBlock
+      lastSeenBlock
+      activityScore
+      totalVolumeInEth
+      gasFeesInEth
+    }
+  }
+`;
+
+export const GET_ADDRESS_PROFILE = gql`
+  query GetAddressProfile($address: String!) {
+    addressProfile(address: $address) {
+      address
+      totalTransactions
+      totalSent
+      totalReceived
+      totalGasFees
+      totalVolume
+      netBalance
+      firstActivity {
+        blockNumber
+        transactionHash
+      }
+      lastActivity {
+        blockNumber
+        transactionHash
+      }
+    }
+  }
+`;
+
+export const GET_ADDRESS_TRANSACTIONS = gql`
+  query GetAddressTransactions($address: String!, $limit: Int, $offset: Int, $statusFilter: String, $directionFilter: String) {
+    transactionsByAddress(address: $address, limit: $limit, offset: $offset, statusFilter: $statusFilter, directionFilter: $directionFilter) {
+      transactions {
+        hash
+        blockNumber
+        fromAddress
+        toAddress
+        valueInEth
+        gasUsed
+        status
+        isSuccessful
+        timestampIso
+        direction
+      }
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+`;
+
+export const GET_ADDRESS_BRIDGE_ACTIVITY = gql`
+  query GetAddressBridgeActivity($address: String!) {
+    bridgeTransactionsByAddress(address: $address, limit: 20) {
+      transactionHash
+      bridgeType
+      fromChain
+      toChain
+      amountInEth
+      status
+      isDeposit
+      isWithdrawal
+      isPending
+    }
+  }
+`;
+
+export const GET_ADDRESS_GROWTH_CHART = gql`
+  query AddressGrowthChart($timeRange: TimeRange!) {
+    addressGrowthChart(timeRange: $timeRange) {
+      data {
+        timestamp
+        totalAddresses
+        newAddresses
+      }
+      dataPoints
+      totalAddresses
     }
   }
 `;
