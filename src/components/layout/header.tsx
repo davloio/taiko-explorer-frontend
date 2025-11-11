@@ -1,16 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Search, Menu, X } from 'lucide-react';
+import { isValidAddress, isValidTxHash } from '@/lib/utils';
+import { Search, Menu, X, Activity, Hash, Users } from 'lucide-react';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<Array<{type: string, label: string, icon: any}>>([]);
   const { theme } = useTheme();
+  const router = useRouter();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -18,6 +24,91 @@ export function Header() {
     { name: 'Transactions', href: '/transactions' },
     { name: 'Addresses', href: '/addresses' },
   ];
+
+  const updateSuggestions = (value: string) => {
+    const trimmed = value.trim();
+    const newSuggestions = [];
+    
+    if (!trimmed) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    // Block number suggestion
+    if (/^\d+$/.test(trimmed)) {
+      newSuggestions.push({
+        type: 'block',
+        label: `Block #${trimmed}`,
+        icon: Activity
+      });
+    }
+
+    // Transaction hash suggestion
+    if (/^0x[a-f0-9]+$/i.test(trimmed) && isValidTxHash(trimmed)) {
+      newSuggestions.push({
+        type: 'transaction',
+        label: `Transaction ${trimmed.slice(0, 10)}...`,
+        icon: Hash
+      });
+    }
+      
+    // Address suggestion
+    if (/^0x[a-f0-9]+$/i.test(trimmed) && isValidAddress(trimmed)) {
+      newSuggestions.push({
+        type: 'address',
+        label: `Address ${trimmed.slice(0, 10)}...`,
+        icon: Users
+      });
+    }
+
+    setSuggestions(newSuggestions);
+    setShowSuggestions(newSuggestions.length > 0);
+  };
+
+  const handleSuggestionClick = (suggestion: any) => {
+    const trimmed = searchQuery.trim();
+    setShowSuggestions(false);
+    setSearchQuery('');
+    
+    if (suggestion.type === 'block') {
+      router.push(`/blocks/${trimmed}`);
+    } else if (suggestion.type === 'transaction') {
+      router.push(`/transactions/${trimmed}`);
+    } else if (suggestion.type === 'address') {
+      router.push(`/addresses/${trimmed}`);
+    }
+  };
+
+  const handleDirectSearch = (query: string) => {
+    const trimmed = query.trim();
+    setSearchQuery('');
+    setShowSuggestions(false);
+    
+    // Check if it's a block number
+    if (/^\d+$/.test(trimmed)) {
+      router.push(`/blocks/${trimmed}`);
+      return;
+    }
+
+    // Check if it's a transaction hash
+    if (isValidTxHash(trimmed)) {
+      router.push(`/transactions/${trimmed}`);
+      return;
+    }
+
+    // Check if it's an address
+    if (isValidAddress(trimmed)) {
+      router.push(`/addresses/${trimmed}`);
+      return;
+    }
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    updateSuggestions(value);
+  };
 
   return (
     <header className={`border-b sticky top-0 z-50 shadow-sm backdrop-blur ${
@@ -87,6 +178,7 @@ export function Header() {
                 }`} />
               </div>
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="Search blocks, transactions, addresses..."
                 className={`w-full pl-12 pr-6 py-3 border rounded-xl backdrop-blur-sm transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg ${
@@ -95,13 +187,49 @@ export function Header() {
                     : 'border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-taiko-pink focus:border-taiko-pink text-gray-900 placeholder-gray-500'
                 }`}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchInputChange}
+                onFocus={() => updateSuggestions(searchQuery)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && searchQuery.trim()) {
-                    window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+                    if (suggestions.length > 0) {
+                      handleSuggestionClick(suggestions[0]);
+                    } else {
+                      handleDirectSearch(searchQuery);
+                    }
                   }
                 }}
               />
+              
+              {/* Search Suggestions Dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 backdrop-blur-sm ${
+                  theme === 'pink' 
+                    ? 'bg-[#C2185B]/95 border-white/20' 
+                    : 'bg-white border-gray-200'
+                }`}>
+                  {suggestions.map((suggestion, index) => {
+                    const IconComponent = suggestion.icon;
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                          theme === 'pink' 
+                            ? 'text-white hover:bg-white/20' 
+                            : 'text-gray-900 hover:bg-gray-50'
+                        }`}
+                        onMouseDown={() => handleSuggestionClick(suggestion)}
+                      >
+                        <IconComponent className={`h-4 w-4 ${
+                          theme === 'pink' ? 'text-white/70' : 'text-gray-500'
+                        }`} />
+                        <span>{suggestion.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -183,14 +311,53 @@ export function Header() {
                         : 'border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-taiko-pink focus:border-taiko-pink text-gray-900 placeholder-gray-500'
                     }`}
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchInputChange}
+                    onFocus={() => updateSuggestions(searchQuery)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && searchQuery.trim()) {
-                        window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+                        if (suggestions.length > 0) {
+                          handleSuggestionClick(suggestions[0]);
+                        } else {
+                          handleDirectSearch(searchQuery);
+                        }
                         setIsMenuOpen(false);
                       }
                     }}
                   />
+                  
+                  {/* Mobile Search Suggestions Dropdown */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 backdrop-blur-sm ${
+                      theme === 'pink' 
+                        ? 'bg-[#C2185B]/95 border-white/20' 
+                        : 'bg-white border-gray-200'
+                    }`}>
+                      {suggestions.map((suggestion, index) => {
+                        const IconComponent = suggestion.icon;
+                        return (
+                          <button
+                            key={index}
+                            type="button"
+                            className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                              theme === 'pink' 
+                                ? 'text-white hover:bg-white/20' 
+                                : 'text-gray-900 hover:bg-gray-50'
+                            }`}
+                            onMouseDown={() => {
+                              handleSuggestionClick(suggestion);
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <IconComponent className={`h-4 w-4 ${
+                              theme === 'pink' ? 'text-white/70' : 'text-gray-500'
+                            }`} />
+                            <span>{suggestion.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

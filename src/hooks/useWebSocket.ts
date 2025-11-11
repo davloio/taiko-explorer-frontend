@@ -103,7 +103,6 @@ export function useWebSocket(
 
   const connect = () => {
     try {
-      // Clean up existing connection
       if (wsRef.current) {
         wsRef.current.close();
       }
@@ -130,10 +129,8 @@ export function useWebSocket(
                 setLastBlock(blockData);
                 setTotalBlocks(blockData.number);
                 setRecentBlocks(prev => {
-                  // Check if block already exists to avoid duplicates
                   const exists = prev.some(block => block.number === blockData.number);
                   if (exists) return prev;
-                  // Add new block at top, keep only 10 most recent
                   return [blockData, ...prev].slice(0, 10);
                 });
               }
@@ -143,10 +140,8 @@ export function useWebSocket(
               if (message.data && 'hash' in message.data) {
                 const txData = message.data as TransactionData;
                 setRecentTransactions(prev => {
-                  // Check if transaction already exists to avoid duplicates
                   const exists = prev.some(tx => tx.hash === txData.hash);
                   if (exists) return prev;
-                  // Add new transaction at top, keep only 10 most recent
                   return [txData, ...prev].slice(0, 10);
                 });
               }
