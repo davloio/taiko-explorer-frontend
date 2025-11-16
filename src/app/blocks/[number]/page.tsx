@@ -30,7 +30,6 @@ export default function BlockDetailPage({ params }: BlockDetailPageProps) {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy text');
     }
   };
 
@@ -258,7 +257,6 @@ export default function BlockDetailPage({ params }: BlockDetailPageProps) {
               Limit: {block.gasLimit?.toLocaleString() || 'N/A'}
             </div>
             
-            {/* Simple progress bar without rainbow */}
             {block.gasUsed && block.gasLimit && (
               <div className="mt-3">
                 <div className={`w-full h-2 rounded-full ${

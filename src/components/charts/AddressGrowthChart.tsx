@@ -31,17 +31,13 @@ export default function AddressGrowthChart() {
   });
 
   const formatDate = (timestamp: string) => {
-    // Handle different timestamp formats
     let date;
     if (typeof timestamp === 'number') {
-      // Unix timestamp in seconds
       date = new Date(timestamp * 1000);
     } else if (typeof timestamp === 'string') {
-      // ISO string or unix timestamp as string
       if (timestamp.includes('T') || timestamp.includes('-')) {
         date = new Date(timestamp);
       } else {
-        // Assume unix timestamp as string
         const numTimestamp = parseInt(timestamp);
         date = new Date(numTimestamp < 1e10 ? numTimestamp * 1000 : numTimestamp);
       }
@@ -118,20 +114,55 @@ export default function AddressGrowthChart() {
           <TrendingUp className={`h-6 w-6 ${
             theme === 'pink' ? 'text-white' : 'text-gray-600'
           }`} />
-          <h2 className={`text-xl font-bold ${
-            theme === 'pink' ? 'text-white' : 'text-gray-900'
-          }`}>
-            📈 Blockchain User Growth
-          </h2>
+          <div>
+            <h2 className={`text-xl font-bold ${
+              theme === 'pink' ? 'text-white' : 'text-gray-900'
+            }`}>
+              Blockchain User Growth
+            </h2>
+            <div className={`h-4 w-48 rounded mt-2 animate-pulse ${
+              theme === 'pink' ? 'bg-white/20' : 'bg-gray-200'
+            }`} />
+          </div>
         </div>
-        <div className={`animate-pulse h-80 rounded-lg ${
+        
+        <div className="mb-6">
+          <div className={`p-6 rounded-xl text-center ${
+            theme === 'pink' ? 'bg-white/10' : 'bg-gray-50'
+          }`}>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className={`h-4 w-32 rounded animate-pulse ${
+                theme === 'pink' ? 'bg-white/20' : 'bg-gray-200'
+              }`} />
+            </div>
+            <div className={`h-10 w-40 rounded mx-auto animate-pulse ${
+              theme === 'pink' ? 'bg-white/20' : 'bg-gray-200'
+            }`} />
+          </div>
+        </div>
+        
+        <div className={`h-80 rounded-lg ${
           theme === 'pink' ? 'bg-white/10' : 'bg-gray-100'
-        }`} />
+        }`}>
+          <div className="flex items-end justify-around h-full p-8 pb-12">
+            {[40, 65, 45, 70, 55, 80, 75, 85, 90, 95].map((height, i) => (
+              <div 
+                key={i}
+                className={`w-8 animate-pulse rounded-t ${
+                  theme === 'pink' ? 'bg-white/20' : 'bg-gray-300'
+                }`}
+                style={{ 
+                  height: `${height}%`,
+                  animationDelay: `${i * 100}ms`
+                }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Fallback mock data for testing
   const mockData = {
     addressGrowthChart: {
       data: [
@@ -151,7 +182,6 @@ export default function AddressGrowthChart() {
     }
   };
 
-  // Use mock data if API fails or returns no data
   const chartData = data || (error ? mockData : null);
   
   if (!chartData) {
@@ -168,7 +198,7 @@ export default function AddressGrowthChart() {
           <h2 className={`text-xl font-bold ${
             theme === 'pink' ? 'text-white' : 'text-gray-900'
           }`}>
-            📈 Blockchain User Growth
+            Blockchain User Growth
           </h2>
         </div>
         <div className={`text-center py-8 ${
@@ -192,7 +222,6 @@ export default function AddressGrowthChart() {
         ? 'bg-white/20 backdrop-blur-sm border-white/30' 
         : 'bg-white border-gray-200'
     }`}>
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <TrendingUp className={`h-6 w-6 ${
           theme === 'pink' ? 'text-white' : 'text-gray-600'
@@ -211,7 +240,6 @@ export default function AddressGrowthChart() {
         </div>
       </div>
 
-      {/* Stats Card */}
       <div className="mb-6">
         <div className={`p-6 rounded-xl text-center ${
           theme === 'pink' ? 'bg-white/10' : 'bg-gray-50'
@@ -234,7 +262,6 @@ export default function AddressGrowthChart() {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>

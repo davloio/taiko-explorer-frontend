@@ -29,7 +29,6 @@ export default function TransactionDetailPage({ params }: TransactionDetailPageP
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy text');
     }
   };
 
@@ -361,7 +360,6 @@ export default function TransactionDetailPage({ params }: TransactionDetailPageP
                 }
               </div>
               
-              {/* Simple progress bar without rainbow */}
               {transaction.gasUsed && transaction.gasLimit && (
                 <div className="mt-3">
                   <div className={`w-full h-2 rounded-full ${

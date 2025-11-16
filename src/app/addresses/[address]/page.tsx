@@ -65,7 +65,6 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy address');
     }
   };
 

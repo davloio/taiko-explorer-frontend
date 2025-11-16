@@ -18,29 +18,29 @@ export default function HomePage() {
     variables: { limit: 10 }
   });
   
-  // Prepare initial data for WebSocket
-  const initialBlocks = blocksData?.blocks?.blocks?.map((block: any) => ({
-    number: block.number,
-    hash: block.hash,
-    timestamp: block.timestamp,
-    transaction_count: block.transactionCount,
-    gas_used: block.gasUsed,
-    gas_limit: '30000000',
-    miner: block.miner
-  })) || [];
+  const initialBlocks = blocksData?.blocks?.blocks?.map((block: any) => {
+    return {
+      number: block.number,
+      hash: block.hash,
+      timestamp: block.timestamp,
+      transaction_count: block.transactionCount,
+      gas_used: block.gasUsed,
+      gas_limit: '30000000',
+      miner: block.miner
+    };
+  }) || [];
 
-  const initialTransactions = transactionsData?.transactions?.transactions?.map((tx: any) => ({
-    hash: tx.hash,
-    block_number: tx.blockNumber,
-    from_address: tx.fromAddress,
-    to_address: tx.toAddress,
-    value: tx.value,
-    gas_used: tx.gasUsed,
-    status: tx.status === 'SUCCESS' ? 1 : 0
-  })) || [];
-
-
-  // Memoize WebSocket options to prevent constant reconnections
+  const initialTransactions = transactionsData?.transactions?.transactions?.map((tx: any) => {
+    return {
+      hash: tx.hash,
+      block_number: tx.blockNumber,
+      from_address: tx.fromAddress,
+      to_address: tx.toAddress,
+      value: tx.value,
+      gas_used: tx.gasUsed,
+      status: tx.status === 'SUCCESS' ? 1 : (tx.status === 1 || tx.status === true) ? 1 : 0
+    };
+  }) || [];
   const webSocketOptions = useMemo(() => ({
     initialBlocks: initialBlocks,
     initialTransactions: initialTransactions
@@ -49,6 +49,9 @@ export default function HomePage() {
   const { 
     isConnected, 
     lastBlock, 
+    latestBlockNumber,
+    isBlockProcessing,
+    processingBlocks,
     recentBlocks, 
     recentTransactions, 
     totalBlocks, 
@@ -56,22 +59,28 @@ export default function HomePage() {
     totalAddresses 
   } = useWebSocket('ws://localhost:3000/ws', webSocketOptions);
 
-  
-  const [countdown, setCountdown] = useState(12);
-  const [progress, setProgress] = useState(0);
 
-  // Reset countdown when new block arrives
+  
+  const [countdown, setCountdown] = useState(6);
+  const [progress, setProgress] = useState(0);
+  const [isBlockLate, setIsBlockLate] = useState(false);
+  const [lateSeconds, setLateSeconds] = useState(0);
+
   useEffect(() => {
-    if (lastBlock && isConnected) {
-      setCountdown(12); 
+    if (latestBlockNumber && isConnected) {
+      setCountdown(6);
+      setIsBlockLate(false);
+      setLateSeconds(0);
     }
-  }, [lastBlock, isConnected]);
+  }, [latestBlockNumber, isConnected]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          return 12;
+          setIsBlockLate(true);
+          setLateSeconds(prevLate => prevLate + 1);
+          return 0;
         }
         return prev - 1;
       });
@@ -81,8 +90,12 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    setProgress(((12 - countdown) / 12) * 100);
-  }, [countdown]);
+    if (isBlockLate) {
+      setProgress(100);
+    } else {
+      setProgress(((6 - countdown) / 6) * 100);
+    }
+  }, [countdown, isBlockLate]);
 
   const formatTxValue = (value: string) => {
     const eth = parseInt(value) / 1e18;
@@ -96,18 +109,40 @@ export default function HomePage() {
   };
 
   const getStatusColors = (status: number) => {
+    const isSuccess = status === 1;
     if (theme === 'pink') {
-      return status === 1 ? 'bg-emerald-500/20 text-emerald-200' : 'bg-rose-500/20 text-rose-200';
+      return isSuccess ? 'bg-emerald-500/20 text-emerald-200' : 'bg-rose-500/20 text-rose-200';
     } else {
-      return status === 1 ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white';
+      return isSuccess ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white';
     }
+  };
+
+  const getStatusText = (status: number) => {
+    return status === 1 ? 'Success' : 'Failed';
+  };
+
+  const getGasUsageLabel = (gasUsed: string, gasLimit: string) => {
+    const used = parseInt(gasUsed || '0');
+    const limit = parseInt(gasLimit || '30000000');
+    if (used === 0) return '0% gas';
+    const percentage = Math.round((used / limit) * 100);
+    return `${percentage}% gas`;
+  };
+
+  const getTimeAgo = (timestamp: number) => {
+    const now = Math.floor(Date.now() / 1000);
+    const diff = now - timestamp;
+    
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
   };
 
   return (
     <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Hero Section */}
         <div className="text-center mb-8">
           <h1 className={`text-4xl lg:text-5xl font-bold mb-2 ${
             theme === 'pink' ? 'text-white' : 'text-gray-900'
@@ -126,10 +161,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* 4-Card Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           
-          {/* Top Left: Latest Block with Loading Bar */}
           <div className={`rounded-2xl p-6 shadow-lg border ${
             theme === 'pink' 
               ? 'bg-white/20 backdrop-blur-sm border-white/30' 
@@ -156,24 +189,55 @@ export default function HomePage() {
               <div className={`text-5xl font-black mb-2 ${
                 theme === 'pink' ? 'text-white' : 'text-gray-900'
               }`}>
-                #{(lastBlock?.number || totalBlocks || statsData?.stats?.totalBlocks || 0).toLocaleString()}
+                {statsLoading && !latestBlockNumber && !totalBlocks ? (
+                  <div className="flex items-center justify-center">
+                    <div className={`animate-spin rounded-full h-8 w-8 border-2 ${
+                      theme === 'pink' ? 'border-white/20 border-t-white' : 'border-gray-300 border-t-gray-600'
+                    }`}></div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <span>
+                      #{(latestBlockNumber || lastBlock?.number || statsData?.stats?.latestBlockNumber || totalBlocks || statsData?.stats?.totalBlocks || 0).toLocaleString()}
+                    </span>
+                    {isBlockProcessing && (
+                      <div className={`animate-spin rounded-full h-4 w-4 border-2 ${
+                        theme === 'pink' ? 'border-white/30 border-t-white' : 'border-gray-400 border-t-gray-600'
+                      }`}></div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className={`text-sm ${
                 theme === 'pink' ? 'text-white/80' : 'text-gray-600'
               }`}>
-                Next block in {countdown} seconds
+                {isBlockProcessing ? (
+                  <span className={`flex items-center justify-center gap-1 ${
+                    theme === 'pink' ? 'text-yellow-200' : 'text-yellow-600'
+                  }`}>
+                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></div>
+                    Processing transactions...
+                  </span>
+                ) : isBlockLate ? (
+                  <span className={`${theme === 'pink' ? 'text-red-200' : 'text-red-600'}`}>
+                    Block late for {lateSeconds} second{lateSeconds !== 1 ? 's' : ''}
+                  </span>
+                ) : (
+                  `Next block in ${countdown} seconds`
+                )}
               </div>
             </div>
 
-            {/* 12-second progress bar */}
             <div className={`relative h-3 rounded-full overflow-hidden ${
               theme === 'pink' ? 'bg-white/20' : 'bg-gray-200'
             }`}>
               <div 
                 className={`absolute left-0 top-0 h-full transition-all duration-1000 ease-linear ${
-                  theme === 'pink' 
-                    ? 'bg-gradient-to-r from-white to-white/80' 
-                    : 'bg-gradient-to-r from-[#C2185B] to-[#C2185B]/80'
+                  isBlockLate
+                    ? 'bg-gradient-to-r from-red-500 to-red-400'
+                    : theme === 'pink' 
+                      ? 'bg-gradient-to-r from-white to-white/80' 
+                      : 'bg-gradient-to-r from-[#C2185B] to-[#C2185B]/80'
                 }`}
                 style={{ width: `${progress}%` }}
               />
@@ -189,7 +253,6 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Top Right: Transaction Count */}
           <div className={`rounded-2xl p-6 shadow-lg border ${
             theme === 'pink' 
               ? 'bg-white/20 backdrop-blur-sm border-white/30' 
@@ -208,17 +271,19 @@ export default function HomePage() {
               <div className={`text-5xl font-black mb-2 ${
                 theme === 'pink' ? 'text-white' : 'text-gray-900'
               }`}>
-                {(totalTransactions || statsData?.stats?.totalTransactions || 0).toLocaleString()}
-              </div>
-              <div className={`text-sm ${
-                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
-              }`}>
-                All transactions processed
+                {statsLoading && !totalTransactions && !statsData?.stats?.totalTransactions ? (
+                  <div className="flex items-center justify-center">
+                    <div className={`animate-spin rounded-full h-8 w-8 border-2 ${
+                      theme === 'pink' ? 'border-white/20 border-t-white' : 'border-gray-300 border-t-gray-600'
+                    }`}></div>
+                  </div>
+                ) : (
+                  (totalTransactions || statsData?.stats?.totalTransactions || 0).toLocaleString()
+                )}
               </div>
             </div>
           </div>
 
-          {/* Bottom Left: Latest 10 Blocks */}
           <div className={`rounded-2xl p-6 shadow-lg border h-[900px] flex flex-col ${
             theme === 'pink' 
               ? 'bg-white/20 backdrop-blur-sm border-white/30' 
@@ -237,7 +302,7 @@ export default function HomePage() {
             <div className="flex-1 flex flex-col">
               <div className="flex-1 overflow-y-auto">
                 <div>
-                  {blocksLoading ? (
+                  {blocksLoading && recentBlocks.length === 0 ? (
                   <div className={`text-center py-8 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/60`}>
                     Loading latest blocks...
                   </div>
@@ -258,10 +323,10 @@ export default function HomePage() {
                         </span>
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                           theme === 'pink' 
-                            ? 'bg-blue-500/20 text-blue-200' 
-                            : 'bg-blue-100 text-blue-700'
+                            ? 'bg-purple-500/20 text-purple-200' 
+                            : 'bg-purple-100 text-purple-700'
                         }`}>
-                          {block.transaction_count} txns
+                          {block.transaction_count || block.transactionCount || 0} txns
                         </span>
                       </div>
                       <div className={`flex items-center justify-between text-xs ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/80`}>
@@ -269,7 +334,7 @@ export default function HomePage() {
                           Miner: {truncateHash(block.miner)}
                         </div>
                         <div className="font-semibold">
-                          {new Date(block.timestamp * 1000).toLocaleTimeString()}
+                          {getTimeAgo(block.timestamp)}
                         </div>
                       </div>
                     </Link>
@@ -284,7 +349,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Bottom Right: Latest 10 Transactions */}
           <div className={`rounded-2xl p-6 shadow-lg border h-[900px] flex flex-col ${
             theme === 'pink' 
               ? 'bg-white/20 backdrop-blur-sm border-white/30' 
@@ -303,7 +367,7 @@ export default function HomePage() {
             <div className="flex-1 flex flex-col">
               <div className="flex-1 overflow-y-auto">
                 <div>
-                  {transactionsLoading ? (
+                  {transactionsLoading && recentTransactions.length === 0 ? (
                   <div className={`text-center py-8 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/60`}>
                     Loading latest transactions...
                   </div>
@@ -325,7 +389,7 @@ export default function HomePage() {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                           getStatusColors(tx.status)
                         }`}>
-                          {tx.status === 1 ? 'Success' : 'Failed'}
+                          {getStatusText(tx.status)}
                         </span>
                       </div>
                       <div className={`flex items-center justify-between text-xs ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/80`}>
@@ -349,7 +413,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Total Users Card - Full Width */}
         <div className="mt-6 max-w-6xl mx-auto">
           <div className={`rounded-2xl p-6 shadow-lg border ${
             theme === 'pink' 

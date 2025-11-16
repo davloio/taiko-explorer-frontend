@@ -10,12 +10,10 @@ export function BlockCountdown() {
   const [currentBlock, setCurrentBlock] = useState(1);
   const { lastBlock, isConnected } = useWebSocket();
 
-  // Reset countdown when new block arrives
   useEffect(() => {
     if (lastBlock && isConnected) {
       setCurrentBlock(lastBlock.number + 1);
-      setCountdown(12); // Reset to 12 seconds for new block
-      console.log('🔄 New block detected, resetting countdown:', lastBlock.number);
+      setCountdown(12);
     }
   }, [lastBlock, isConnected]);
 
@@ -23,7 +21,6 @@ export function BlockCountdown() {
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          // Only auto-increment if not connected to WebSocket
           if (!isConnected) {
             setCurrentBlock(b => b + 1);
           }
@@ -40,16 +37,13 @@ export function BlockCountdown() {
 
   return (
     <div className="relative bg-gradient-to-br from-white via-pink-50/30 to-white taiko-mode:from-white/20 taiko-mode:via-white/10 taiko-mode:to-white/20 taiko-mode:backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-100/50 taiko-mode:border-white/30 overflow-hidden">
-      {/* Animated background with moving shapes */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-4 right-8 w-20 h-20 bg-gradient-to-br from-[#D5775E]/10 to-[#E8469B]/10 rounded-full animate-pulse" style={{ animationDuration: '3s' }}></div>
         <div className="absolute bottom-6 left-4 w-16 h-16 bg-gradient-to-br from-[#E8469B]/10 to-[#D5775E]/10 rounded-full animate-pulse" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
         <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-gradient-to-br from-[#D5775E]/5 to-[#E8469B]/5 rounded-full animate-pulse" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
       </div>
       
-      {/* Main content */}
       <div className="relative z-10">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="w-12 h-12 bg-gradient-to-br from-[#D5775E] to-[#E8469B] rounded-2xl flex items-center justify-center shadow-lg taiko-block-icon">
@@ -64,10 +58,8 @@ export function BlockCountdown() {
           <p className="text-gray-600 taiko-mode:text-white/90 font-medium">Taiko Layer 2 Network</p>
         </div>
 
-        {/* Countdown Display */}
         <div className="text-center mb-8">
           <div className="relative inline-block">
-            {/* Countdown number with morphing background */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-[#D5775E]/20 to-[#E8469B]/20 rounded-3xl taiko-morph-bg"></div>
               <div className="relative px-8 py-4">
@@ -81,7 +73,6 @@ export function BlockCountdown() {
         </div>
 
 
-        {/* Block Visualization */}
         <div className="grid grid-cols-12 gap-1 mb-8">
           {[...Array(12)].map((_, i) => {
             const isPast = i < (12 - countdown);

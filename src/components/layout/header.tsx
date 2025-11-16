@@ -35,7 +35,6 @@ export function Header() {
       return;
     }
 
-    // Block number suggestion
     if (/^\d+$/.test(trimmed)) {
       newSuggestions.push({
         type: 'block',
@@ -44,7 +43,6 @@ export function Header() {
       });
     }
 
-    // Transaction hash suggestion
     if (/^0x[a-f0-9]+$/i.test(trimmed) && isValidTxHash(trimmed)) {
       newSuggestions.push({
         type: 'transaction',
@@ -53,7 +51,6 @@ export function Header() {
       });
     }
       
-    // Address suggestion
     if (/^0x[a-f0-9]+$/i.test(trimmed) && isValidAddress(trimmed)) {
       newSuggestions.push({
         type: 'address',
@@ -85,19 +82,16 @@ export function Header() {
     setSearchQuery('');
     setShowSuggestions(false);
     
-    // Check if it's a block number
     if (/^\d+$/.test(trimmed)) {
       router.push(`/blocks/${trimmed}`);
       return;
     }
 
-    // Check if it's a transaction hash
     if (isValidTxHash(trimmed)) {
       router.push(`/transactions/${trimmed}`);
       return;
     }
 
-    // Check if it's an address
     if (isValidAddress(trimmed)) {
       router.push(`/addresses/${trimmed}`);
       return;
@@ -118,7 +112,6 @@ export function Header() {
     }`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex-shrink-0">
             <div className="flex items-center space-x-3">
               <a 
@@ -146,7 +139,6 @@ export function Header() {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-1">
             {navigation.map((item) => (
               <Link
@@ -167,7 +159,6 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8">
             <div className="relative w-full group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -201,7 +192,6 @@ export function Header() {
                 }}
               />
               
-              {/* Search Suggestions Dropdown */}
               {showSuggestions && suggestions.length > 0 && (
                 <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 backdrop-blur-sm ${
                   theme === 'pink' 
@@ -233,11 +223,9 @@ export function Header() {
             </div>
           </div>
 
-          {/* Theme Toggle & Mobile Menu */}
           <div className="flex items-center space-x-2">
             <ThemeToggle />
             
-            {/* Mobile menu button */}
             <div className="md:hidden">
               <Button
                 variant="ghost"
@@ -265,7 +253,6 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden animate-in slide-in-from-top-2 duration-300">
             <div className={`px-4 pt-4 pb-6 space-y-3 border-t backdrop-blur-sm ${
@@ -292,7 +279,6 @@ export function Header() {
                 </Link>
               ))}
               
-              {/* Mobile Search */}
               <div className="px-2 pt-4">
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -326,7 +312,6 @@ export function Header() {
                     }}
                   />
                   
-                  {/* Mobile Search Suggestions Dropdown */}
                   {showSuggestions && suggestions.length > 0 && (
                     <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 backdrop-blur-sm ${
                       theme === 'pink' 

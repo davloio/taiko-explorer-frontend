@@ -13,6 +13,7 @@ export interface BlockData {
 }
 
 export interface TransactionData {
+  id?: number;
   hash: string;
   block_number: number;
   from_address: string;
@@ -20,6 +21,7 @@ export interface TransactionData {
   value: string;
   gas_used: number;
   status: number;
+  direction?: string;
 }
 
 export interface StatsData {
@@ -52,16 +54,33 @@ export interface AddressStatsData {
   last_seen_block: number;
 }
 
+export interface BlockHeightData {
+  block_number: number;
+  timestamp: number;
+  status: 'height_stored';
+  miner: string;
+  transaction_count: number;
+}
+
+export interface BlockCompleteData {
+  block_number: number;
+  timestamp: number;
+  status: 'transactions_processed';
+}
+
 export interface WebSocketMessage {
-  type: 'connected' | 'new_block' | 'new_transaction' | 'stats' | 'new_address' | 'address_activity' | 'address_stats_update' | 'error';
+  type: 'connected' | 'new_block' | 'new_block_height' | 'block_complete' | 'new_transaction' | 'stats' | 'new_address' | 'address_activity' | 'address_stats_update' | 'error';
   message?: string;
   connection_id?: string;
-  data?: BlockData | TransactionData | StatsData | AddressData | AddressActivityData | AddressStatsData;
+  data?: BlockData | BlockHeightData | BlockCompleteData | TransactionData | StatsData | AddressData | AddressActivityData | AddressStatsData;
 }
 
 export interface UseWebSocketReturn {
   isConnected: boolean;
   lastBlock: BlockData | null;
+  latestBlockNumber: number;
+  isBlockProcessing: boolean;
+  processingBlocks: Set<number>;
   recentBlocks: BlockData[];
   recentTransactions: TransactionData[];
   stats: StatsData | null;
@@ -85,6 +104,9 @@ export function useWebSocket(
 ): UseWebSocketReturn {
   const [isConnected, setIsConnected] = useState(false);
   const [lastBlock, setLastBlock] = useState<BlockData | null>(null);
+  const [latestBlockNumber, setLatestBlockNumber] = useState(0);
+  const [isBlockProcessing, setIsBlockProcessing] = useState(false);
+  const [processingBlocks, setProcessingBlocks] = useState<Set<number>>(new Set());
   const [recentBlocks, setRecentBlocks] = useState<BlockData[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<TransactionData[]>([]);
   const [stats, setStats] = useState<StatsData | null>(null);
@@ -123,16 +145,64 @@ export function useWebSocket(
             case 'connected':
               break;
               
+            case 'new_block_height':
+              if (message.data && 'block_number' in message.data) {
+                const heightData = message.data as BlockHeightData;
+                setLatestBlockNumber(heightData.block_number);
+                setTotalBlocks(heightData.block_number);
+                setProcessingBlocks(prev => new Set([...prev, heightData.block_number]));
+                setIsBlockProcessing(true);
+                const basicBlock: BlockData = {
+                  number: heightData.block_number,
+                  hash: `temp_${heightData.block_number}`,
+                  timestamp: heightData.timestamp,
+                  transaction_count: heightData.transaction_count,
+                  gas_used: '0',
+                  gas_limit: '30000000',
+                  miner: heightData.miner
+                };
+                setRecentBlocks(prev => {
+                  const exists = prev.some(block => block.number === heightData.block_number);
+                  if (exists) return prev;
+                  return [basicBlock, ...prev].slice(0, 10);
+                });
+              }
+              break;
+              
+            case 'block_complete':
+              if (message.data && 'block_number' in message.data) {
+                const completeData = message.data as BlockCompleteData;
+                setProcessingBlocks(prev => {
+                  const newSet = new Set(prev);
+                  newSet.delete(completeData.block_number);
+                  return newSet;
+                });
+                setIsBlockProcessing(prev => processingBlocks.size > 1);
+              }
+              break;
+              
             case 'new_block':
               if (message.data && 'number' in message.data) {
                 const blockData = message.data as BlockData;
                 setLastBlock(blockData);
+                setLatestBlockNumber(blockData.number);
                 setTotalBlocks(blockData.number);
                 setRecentBlocks(prev => {
-                  const exists = prev.some(block => block.number === blockData.number);
-                  if (exists) return prev;
-                  return [blockData, ...prev].slice(0, 10);
+                  const existingIndex = prev.findIndex(block => block.number === blockData.number);
+                  if (existingIndex !== -1) {
+                    const updated = [...prev];
+                    updated[existingIndex] = blockData;
+                    return updated;
+                  } else {
+                    return [blockData, ...prev].slice(0, 10);
+                  }
                 });
+                setProcessingBlocks(prev => {
+                  const newSet = new Set(prev);
+                  newSet.delete(blockData.number);
+                  return newSet;
+                });
+                setIsBlockProcessing(prev => processingBlocks.size > 1);
               }
               break;
               
@@ -141,9 +211,13 @@ export function useWebSocket(
                 const txData = message.data as TransactionData;
                 setRecentTransactions(prev => {
                   const exists = prev.some(tx => tx.hash === txData.hash);
-                  if (exists) return prev;
-                  return [txData, ...prev].slice(0, 10);
+                  if (exists) {
+                    return prev;
+                  }
+                  const newList = [txData, ...prev].slice(0, 10);
+                  return newList;
                 });
+                setTotalTransactions(prev => prev + 1);
               }
               break;
               
@@ -189,15 +263,11 @@ export function useWebSocket(
       };
 
       wsRef.current.onclose = (event) => {
-        
-        // Only set to disconnected if it's not a normal close or already reconnecting
         if (event.code !== 1000) {
           setIsConnected(false);
         }
-
-        // Attempt to reconnect if not a manual close
         if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000); // Exponential backoff, max 30s
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
           
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectAttempts.current++;
@@ -231,10 +301,13 @@ export function useWebSocket(
     };
   }, [url]);
 
-  // Update state when initial data is provided
   useEffect(() => {
     if (options.initialBlocks && options.initialBlocks.length > 0 && recentBlocks.length === 0) {
       setRecentBlocks(options.initialBlocks);
+      if (options.initialBlocks[0]?.number) {
+        setLatestBlockNumber(options.initialBlocks[0].number);
+        setTotalBlocks(options.initialBlocks[0].number);
+      }
     }
   }, [options.initialBlocks, recentBlocks.length]);
 
@@ -247,6 +320,9 @@ export function useWebSocket(
   return {
     isConnected,
     lastBlock,
+    latestBlockNumber,
+    isBlockProcessing,
+    processingBlocks,
     recentBlocks,
     recentTransactions,
     stats,

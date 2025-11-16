@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 
-// Homepage Queries - using correct API schema
 export const GET_LATEST_BLOCK = gql`
   query LatestBlock {
     latestBlock {
@@ -61,7 +60,6 @@ export const GET_STATS = gql`
   }
 `;
 
-// Block Queries
 export const GET_BLOCK_BY_NUMBER = gql`
   query GetBlock($blockNumber: Int!) {
     block(number: $blockNumber) {
@@ -96,7 +94,6 @@ export const GET_BLOCKS = gql`
   }
 `;
 
-// Transaction Queries
 export const GET_TRANSACTION_BY_HASH = gql`
   query GetTransaction($hash: String!) {
     transaction(hash: $hash) {
@@ -140,7 +137,6 @@ export const GET_TRANSACTIONS = gql`
   }
 `;
 
-// Transaction count queries
 export const GET_TRANSACTION_COUNTS_BY_STATUS = gql`
   query GetTransactionCountsByStatus {
     transactionCountsByStatus {
@@ -159,7 +155,6 @@ export const GET_TRANSACTION_COUNTS_BY_DIRECTION = gql`
   }
 `;
 
-// Search Query
 export const UNIVERSAL_SEARCH = gql`
   query Search($query: String!) {
     block(number: $query) {
@@ -184,7 +179,6 @@ export const UNIVERSAL_SEARCH = gql`
   }
 `;
 
-// Address Queries
 export const GET_TOP_ADDRESSES = gql`
   query GetTopAddresses {
     topAddressesByVolume(limit: 10) {

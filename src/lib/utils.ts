@@ -5,7 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Format utilities for blockchain data
 export function formatAddress(address: string, length = 8): string {
   if (!address) return '';
   if (address.length <= length) return address;
