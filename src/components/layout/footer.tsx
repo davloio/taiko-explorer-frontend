@@ -209,7 +209,7 @@ export function Footer() {
                 Made by
               </span>
               <Link 
-                href="https://github.com/Davloio" 
+                href="https://davlo.io/" 
                 className="group relative flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 target="_blank"
                 rel="noopener noreferrer"

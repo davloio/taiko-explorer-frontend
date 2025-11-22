@@ -61,10 +61,26 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(params.address);
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(params.address);
+      } else {
+        // Fallback for non-HTTPS or older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = params.address;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
+      console.error('Failed to copy text: ', err);
     }
   };
 

@@ -57,7 +57,7 @@ export default function HomePage() {
     totalBlocks, 
     totalTransactions,
     totalAddresses 
-  } = useWebSocket('ws://localhost:3000/ws', webSocketOptions);
+  } = useWebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT, webSocketOptions);
 
 
   

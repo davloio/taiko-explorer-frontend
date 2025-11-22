@@ -99,7 +99,7 @@ export interface UseWebSocketOptions {
 }
 
 export function useWebSocket(
-  url: string = 'ws://localhost:3000/ws', 
+  url: string = process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT || 'ws://localhost:3000/ws', 
   options: UseWebSocketOptions = {}
 ): UseWebSocketReturn {
   const [isConnected, setIsConnected] = useState(false);
