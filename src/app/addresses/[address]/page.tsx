@@ -84,11 +84,13 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
     }
   };
 
-  const truncateHash = (hash: string) => {
+  const truncateHash = (hash: string | null | undefined) => {
+    if (!hash) return 'N/A';
     return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
   };
 
-  const formatValue = (value: string) => {
+  const formatValue = (value: string | null | undefined) => {
+    if (!value) return '0 ETH';
     const eth = parseFloat(value) / 1e18;
     if (eth === 0) return '0 ETH';
     if (eth < 0.001) return '<0.001 ETH';

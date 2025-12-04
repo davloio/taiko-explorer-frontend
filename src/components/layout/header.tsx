@@ -127,15 +127,6 @@ export function Header() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
               </a>
-              <Link href="/" className="flex flex-col group">
-                <span className={`text-xl font-bold leading-none transition-colors duration-200 ${
-                  theme === 'pink' 
-                    ? 'text-white group-hover:text-white/80' 
-                    : 'text-gray-900 group-hover:text-gray-700'
-                }`}>
-                  Taiko Explorer
-                </span>
-              </Link>
             </div>
           </div>
 

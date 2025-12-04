@@ -97,14 +97,16 @@ export default function HomePage() {
     }
   }, [countdown, isBlockLate]);
 
-  const formatTxValue = (value: string) => {
+  const formatTxValue = (value: string | null | undefined) => {
+    if (!value) return '0 ETH';
     const eth = parseInt(value) / 1e18;
     if (eth === 0) return '0 ETH';
     if (eth < 0.001) return '<0.001 ETH';
     return `${eth.toFixed(3)} ETH`;
   };
 
-  const truncateHash = (hash: string) => {
+  const truncateHash = (hash: string | null | undefined) => {
+    if (!hash) return 'N/A';
     return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
   };
 
@@ -154,11 +156,6 @@ export default function HomePage() {
               Blockchain Explorer
             </span>
           </h1>
-          <p className={`text-lg ${
-            theme === 'pink' ? 'text-white/90' : 'text-gray-600'
-          }`}>
-            Real-time blockchain data with WebSocket updates
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">

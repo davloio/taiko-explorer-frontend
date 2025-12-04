@@ -53,7 +53,8 @@ export default function BlockDetailPage({ params }: BlockDetailPageProps) {
     return new Date(timestamp * 1000).toLocaleString();
   };
 
-  const truncateHash = (hash: string) => {
+  const truncateHash = (hash: string | null | undefined) => {
+    if (!hash) return 'N/A';
     return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
   };
 

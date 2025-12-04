@@ -12,7 +12,8 @@ export default function AddressesPage() {
   const { theme } = useTheme();
   const { data: topAddressesData, loading: topAddressesLoading } = useQuery(GET_TOP_ADDRESSES);
 
-  const truncateAddress = (address: string) => {
+  const truncateAddress = (address: string | null | undefined) => {
+    if (!address) return 'N/A';
     return `${address.slice(0, 8)}...${address.slice(-6)}`;
   };
 
