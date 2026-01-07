@@ -66,18 +66,18 @@ export default function TransactionsPage() {
 
   const getDirectionColors = (direction: string) => {
     if (theme === 'pink') {
-      return 'bg-blue-500/20 text-blue-300';
+      return 'bg-blue-400/30 text-white';
     } else {
-      return 'bg-blue-500/20 text-blue-300';
+      return 'bg-blue-500/20 text-blue-700';
     }
   };
 
   const getStatusColors = (status: number) => {
     if (theme === 'pink') {
       switch(status) {
-        case 1: return 'bg-emerald-500/20 text-emerald-200';
-        case 0: return 'bg-rose-500/20 text-rose-200';
-        default: return 'bg-amber-500/20 text-amber-200';
+        case 1: return 'bg-emerald-400/30 text-white';
+        case 0: return 'bg-rose-400/30 text-white';
+        default: return 'bg-amber-400/30 text-white';
       }
     } else {
       switch(status) {
@@ -89,8 +89,23 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>
+      {/* Taiko-style animated background dots */}
+      <div className="taiko-bg-dots">
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '10%', left: '5%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '15%', left: '15%' }}></div>
+        <div className="taiko-dot taiko-dot-yellow" style={{ top: '20%', left: '85%' }}></div>
+        <div className="taiko-dot taiko-dot-cyan" style={{ top: '25%', right: '10%' }}></div>
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '40%', left: '8%' }}></div>
+        <div className="taiko-dot taiko-dot-orange" style={{ top: '50%', left: '90%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '60%', left: '12%' }}></div>
+        <div className="taiko-dot taiko-dot-yellow" style={{ top: '70%', right: '15%' }}></div>
+        <div className="taiko-dot taiko-dot-cyan" style={{ top: '75%', left: '20%' }}></div>
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '85%', right: '8%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '30%', left: '50%' }}></div>
+        <div className="taiko-dot taiko-dot-orange" style={{ top: '5%', right: '25%' }}></div>
+      </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
       {/* Page Header */}
       <div className="mb-8">
         <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${
@@ -106,10 +121,10 @@ export default function TransactionsPage() {
       {/* Total Transactions and Filters */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Total Transactions Card - Bigger */}
-        <div className={`rounded-2xl p-8 shadow-lg border ${
-          theme === 'pink' 
-            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-            : 'bg-white border-gray-200'
+        <div className={`rounded-3xl p-8 shadow-sm border ${
+          theme === 'pink'
+            ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+            : 'bg-white border-gray-100'
         }`}>
           <div className="flex items-center gap-4 mb-4">
             <Activity className={`h-8 w-8 ${
@@ -136,10 +151,10 @@ export default function TransactionsPage() {
         </div>
 
         {/* Filters Card */}
-        <div className={`rounded-2xl p-8 shadow-lg border ${
-          theme === 'pink' 
-            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-            : 'bg-white border-gray-200'
+        <div className={`rounded-3xl p-8 shadow-sm border ${
+          theme === 'pink'
+            ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+            : 'bg-white border-gray-100'
         }`}>
           <div className="mb-6">
             <h2 className={`text-2xl font-bold ${
@@ -223,10 +238,10 @@ export default function TransactionsPage() {
       </div>
 
       {/* Transactions Table */}
-      <div className={`rounded-2xl p-6 shadow-lg border ${
-        theme === 'pink' 
-          ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-          : 'bg-white border-gray-200'
+      <div className={`rounded-3xl p-6 shadow-sm border ${
+        theme === 'pink'
+          ? 'bg-white/10 backdrop-blur-md border-white/20'
+          : 'bg-white border-gray-100'
       }`}>
         <div className="mb-6">
           <h2 className={`text-lg font-bold ${
@@ -400,10 +415,10 @@ export default function TransactionsPage() {
               {/* Mobile Cards */}
               <div className="lg:hidden space-y-4">
                 {transactions.map((tx: any) => (
-                  <div key={tx.hash} className={`rounded-2xl p-4 shadow-lg border ${
-                    theme === 'pink' 
-                      ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-                      : 'bg-white border-gray-200'
+                  <div key={tx.hash} className={`rounded-3xl p-4 shadow-sm border ${
+                    theme === 'pink'
+                      ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+                      : 'bg-white border-gray-100'
                   }`}>
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex flex-col gap-2">

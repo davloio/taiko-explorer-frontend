@@ -130,7 +130,7 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
 
   if (statsLoading || profileLoading) {
     return (
-      <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
+      <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className={`text-center py-20 ${
             theme === 'pink' ? 'text-white' : 'text-gray-900'
@@ -145,7 +145,7 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
 
   if (statsError || profileError) {
     return (
-      <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
+      <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className={`text-center py-20 ${
             theme === 'pink' ? 'text-white' : 'text-gray-900'
@@ -180,10 +180,10 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
         </div>
 
         {/* Address Header */}
-        <div className={`rounded-2xl p-6 shadow-lg border mb-8 ${
-          theme === 'pink' 
-            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-            : 'bg-white border-gray-200'
+        <div className={`rounded-3xl p-6 shadow-sm border mb-8 ${
+          theme === 'pink'
+            ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+            : 'bg-white border-gray-100'
         }`}>
           <div className="flex items-center gap-3 mb-4">
             <Hash className={`h-6 w-6 ${
@@ -226,10 +226,10 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           
           {/* Total Transactions */}
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-6 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
             <div className="flex items-center gap-3 mb-3">
               <Activity className={`h-5 w-5 ${
@@ -255,10 +255,10 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
           </div>
 
           {/* Total Volume */}
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-6 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
             <div className="flex items-center gap-3 mb-3">
               <TrendingUp className={`h-5 w-5 ${
@@ -289,10 +289,10 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
           </div>
 
           {/* Activity Score */}
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-6 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
             <div className="flex items-center gap-3 mb-3">
               <Clock className={`h-5 w-5 ${
@@ -319,10 +319,10 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
         </div>
 
         {/* Filters */}
-        <div className={`rounded-2xl p-6 shadow-lg border mb-6 ${
-          theme === 'pink' 
-            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-            : 'bg-white border-gray-200'
+        <div className={`rounded-3xl p-6 shadow-sm border mb-6 ${
+          theme === 'pink'
+            ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+            : 'bg-white border-gray-100'
         }`}>
           <div className="mb-4">
             <h2 className={`text-lg font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>Filters</h2>
@@ -382,10 +382,10 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
         </div>
 
         {/* Transaction History */}
-        <div className={`rounded-2xl p-6 shadow-lg border ${
-          theme === 'pink' 
-            ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-            : 'bg-white border-gray-200'
+        <div className={`rounded-3xl p-6 shadow-sm border ${
+          theme === 'pink'
+            ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+            : 'bg-white border-gray-100'
         }`}>
           <div className="flex items-center justify-between mb-6">
             <h3 className={`text-xl font-bold ${

@@ -142,11 +142,26 @@ export default function HomePage() {
   };
 
   return (
-    <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <div className="text-center mb-8">
-          <h1 className={`text-4xl lg:text-5xl font-bold mb-2 ${
+    <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>
+      {/* Taiko-style animated background dots */}
+      <div className="taiko-bg-dots">
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '10%', left: '5%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '15%', left: '15%' }}></div>
+        <div className="taiko-dot taiko-dot-yellow" style={{ top: '20%', left: '85%' }}></div>
+        <div className="taiko-dot taiko-dot-cyan" style={{ top: '25%', right: '10%' }}></div>
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '40%', left: '8%' }}></div>
+        <div className="taiko-dot taiko-dot-orange" style={{ top: '50%', left: '90%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '60%', left: '12%' }}></div>
+        <div className="taiko-dot taiko-dot-yellow" style={{ top: '70%', right: '15%' }}></div>
+        <div className="taiko-dot taiko-dot-cyan" style={{ top: '75%', left: '20%' }}></div>
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '85%', right: '8%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '30%', left: '50%' }}></div>
+        <div className="taiko-dot taiko-dot-orange" style={{ top: '5%', right: '25%' }}></div>
+      </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+
+        <div className="text-center mb-12">
+          <h1 className={`text-5xl lg:text-6xl font-black mb-2 ${
             theme === 'pink' ? 'text-white' : 'text-gray-900'
           }`}>
             Taiko
@@ -158,38 +173,25 @@ export default function HomePage() {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-          
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto mb-12">
+
+          <div className={`rounded-3xl p-8 shadow-xl border relative ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <BlocksIcon className={`h-5 w-5 ${
-                  theme === 'pink' ? 'text-white' : 'text-gray-600'
-                }`} />
-                <h2 className={`text-lg font-bold ${
-                  theme === 'pink' ? 'text-white' : 'text-gray-900'
-                }`}>Latest Block</h2>
-              </div>
-              {isConnected && (
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className={`text-xs ${theme === 'pink' ? 'text-white/80' : 'text-gray-700'}`}>Live</span>
-                </div>
-              )}
+            <div className="mb-6">
+              <h2 className={`text-3xl font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
+                Latest Block
+              </h2>
             </div>
-            
-            <div className="text-center mb-4">
-              <div className={`text-5xl font-black mb-2 ${
-                theme === 'pink' ? 'text-white' : 'text-gray-900'
-              }`}>
+
+            <div className="text-center py-8 mb-6">
+              <div className={`text-6xl font-black mb-3 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
                 {statsLoading && !latestBlockNumber && !totalBlocks ? (
                   <div className="flex items-center justify-center">
                     <div className={`animate-spin rounded-full h-8 w-8 border-2 ${
-                      theme === 'pink' ? 'border-white/20 border-t-white' : 'border-gray-300 border-t-gray-600'
+                      theme === 'pink' ? 'border-white/30 border-t-white' : 'border-gray-300 border-t-gray-600'
                     }`}></div>
                   </div>
                 ) : (
@@ -199,24 +201,22 @@ export default function HomePage() {
                     </span>
                     {isBlockProcessing && (
                       <div className={`animate-spin rounded-full h-4 w-4 border-2 ${
-                        theme === 'pink' ? 'border-white/30 border-t-white' : 'border-gray-400 border-t-gray-600'
+                        theme === 'pink' ? 'border-white/40 border-t-white' : 'border-gray-400 border-t-gray-600'
                       }`}></div>
                     )}
                   </div>
                 )}
               </div>
-              <div className={`text-sm ${
-                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
-              }`}>
+              <div className={`text-sm ${theme === 'pink' ? 'text-white/90' : 'text-gray-600'}`}>
                 {isBlockProcessing ? (
                   <span className={`flex items-center justify-center gap-1 ${
-                    theme === 'pink' ? 'text-yellow-200' : 'text-yellow-600'
+                    theme === 'pink' ? 'text-yellow-100' : 'text-yellow-600'
                   }`}>
                     <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></div>
                     Processing transactions...
                   </span>
                 ) : isBlockLate ? (
-                  <span className={`${theme === 'pink' ? 'text-red-200' : 'text-red-600'}`}>
+                  <span className={theme === 'pink' ? 'text-red-100' : 'text-red-600'}>
                     Block late for {lateSeconds} second{lateSeconds !== 1 ? 's' : ''}
                   </span>
                 ) : (
@@ -225,82 +225,92 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className={`relative h-3 rounded-full overflow-hidden ${
-              theme === 'pink' ? 'bg-white/20' : 'bg-gray-200'
+            <div className={`relative h-2 rounded-full overflow-hidden mb-6 ${
+              theme === 'pink' ? 'bg-white/30' : 'bg-gray-100'
             }`}>
-              <div 
+              <div
                 className={`absolute left-0 top-0 h-full transition-all duration-1000 ease-linear ${
                   isBlockLate
                     ? 'bg-gradient-to-r from-red-500 to-red-400'
-                    : theme === 'pink' 
-                      ? 'bg-gradient-to-r from-white to-white/80' 
-                      : 'bg-gradient-to-r from-[#C2185B] to-[#C2185B]/80'
+                    : theme === 'pink'
+                      ? 'bg-gradient-to-r from-white to-white/80'
+                      : 'bg-gradient-to-r from-pink-500 to-pink-400'
                 }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
-            
-            {lastBlock && (
-              <div className={`mt-4 text-xs ${
-                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
-              }`}>
-                <div>Miner: {truncateHash(lastBlock.miner)}</div>
-                <div>{lastBlock.transaction_count} transactions</div>
-              </div>
-            )}
+
+            <div className={`text-sm space-y-1 ${theme === 'pink' ? 'text-white/90' : 'text-gray-600'}`}>
+              {isConnected && (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Live</span>
+                </div>
+              )}
+              {lastBlock && (
+                <>
+                  <div>Miner: {truncateHash(lastBlock.miner)}</div>
+                  <div>{lastBlock.transaction_count} transactions</div>
+                </>
+              )}
+            </div>
           </div>
 
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-8 shadow-xl border relative ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
-            <div className="flex items-center gap-2 mb-4">
-              <Activity className={`h-5 w-5 ${
-                theme === 'pink' ? 'text-white' : 'text-gray-600'
-              }`} />
-              <h2 className={`text-lg font-bold ${
-                theme === 'pink' ? 'text-white' : 'text-gray-900'
-              }`}>Total Transactions</h2>
+            <div className="mb-6">
+              <h2 className={`text-3xl font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
+                Total Transactions
+              </h2>
             </div>
-            
-            <div className="text-center">
-              <div className={`text-5xl font-black mb-2 ${
-                theme === 'pink' ? 'text-white' : 'text-gray-900'
-              }`}>
+
+            <div className="text-center py-8">
+              <div className={`text-6xl font-black mb-3 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
                 {statsLoading && !totalTransactions && !statsData?.stats?.totalTransactions ? (
                   <div className="flex items-center justify-center">
                     <div className={`animate-spin rounded-full h-8 w-8 border-2 ${
-                      theme === 'pink' ? 'border-white/20 border-t-white' : 'border-gray-300 border-t-gray-600'
+                      theme === 'pink' ? 'border-white/30 border-t-white' : 'border-gray-300 border-t-gray-600'
                     }`}></div>
                   </div>
                 ) : (
                   (totalTransactions || statsData?.stats?.totalTransactions || 0).toLocaleString()
                 )}
               </div>
+              <div className={`text-sm ${theme === 'pink' ? 'text-white/90' : 'text-gray-600'}`}>
+                Transactions processed on the blockchain
+              </div>
             </div>
           </div>
 
-          <div className={`rounded-2xl p-6 shadow-lg border h-[900px] flex flex-col ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-8 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-white/10 backdrop-blur-md border-white/20'
+              : 'bg-white border-gray-100'
           }`}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className={`text-lg font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'} flex items-center gap-2`}>
-                <BlocksIcon className={`h-5 w-5 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`} />
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-3xl font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
                 Latest Blocks
               </h2>
-              <Link href="/blocks" className={`text-sm ${theme === 'pink' ? 'text-white' : 'text-gray-900'} hover:underline`}>
-                View all →
+              <Link
+                href="/blocks"
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors group ${
+                  theme === 'pink'
+                    ? 'bg-white/20 hover:bg-white/30'
+                    : 'bg-pink-500 hover:bg-pink-600'
+                }`}
+              >
+                <ArrowRightIcon className={`h-5 w-5 transform rotate-[-45deg] ${
+                  theme === 'pink' ? 'text-white' : 'text-white'
+                }`} />
               </Link>
             </div>
-            
-            <div className="flex-1 flex flex-col">
-              <div className="flex-1 overflow-y-auto">
-                <div>
+
+            <div>
                   {blocksLoading && recentBlocks.length === 0 ? (
-                  <div className={`text-center py-8 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/60`}>
+                  <div className={`text-center py-8 ${theme === 'pink' ? 'text-white/80' : 'text-gray-500'}`}>
                     Loading latest blocks...
                   </div>
                 ) : recentBlocks.length > 0 ? (
@@ -308,25 +318,29 @@ export default function HomePage() {
                     <Link
                       key={block.hash}
                       href={`/blocks/${block.number}`}
-                      className={`block p-3 mb-3 rounded-xl transition-colors cursor-pointer border ${
-                        theme === 'pink' 
-                          ? 'bg-white/10 hover:bg-white/20 border-white/20' 
-                          : 'bg-white hover:bg-gray-50 border-gray-200 shadow-sm'
+                      className={`block p-4 mb-3 rounded-2xl transition-all cursor-pointer border ${
+                        theme === 'pink'
+                          ? 'bg-white/20 hover:bg-white/30 border-white/40 shadow-lg'
+                          : 'bg-white hover:bg-gray-50 border-gray-200'
                       } ${index === 0 ? 'animate-fadeIn' : ''}`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`font-mono text-xs ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`font-mono text-sm font-semibold ${
+                          theme === 'pink' ? 'text-white' : 'text-gray-900'
+                        }`}>
                           Block #{block.number}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          theme === 'pink' 
-                            ? 'bg-purple-500/20 text-purple-200' 
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                          theme === 'pink'
+                            ? 'bg-white/20 text-white'
                             : 'bg-purple-100 text-purple-700'
                         }`}>
                           {block.transaction_count || block.transactionCount || 0} txns
                         </span>
                       </div>
-                      <div className={`flex items-center justify-between text-xs ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/80`}>
+                      <div className={`flex items-center justify-between text-xs ${
+                        theme === 'pink' ? 'text-white/90' : 'text-gray-600'
+                      }`}>
                         <div>
                           Miner: {truncateHash(block.miner)}
                         </div>
@@ -337,35 +351,37 @@ export default function HomePage() {
                     </Link>
                   ))
                   ) : (
-                    <div className={`text-center py-8 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/60`}>
+                    <div className={`text-center py-8 ${theme === 'pink' ? 'text-white/80' : 'text-gray-500'}`}>
                       {isConnected ? 'Waiting for blocks...' : 'Connecting...'}
                     </div>
                   )}
-                </div>
-              </div>
             </div>
           </div>
 
-          <div className={`rounded-2xl p-6 shadow-lg border h-[900px] flex flex-col ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-8 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-white/10 backdrop-blur-md border-white/20'
+              : 'bg-white border-gray-100'
           }`}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className={`text-lg font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'} flex items-center gap-2`}>
-                <Activity className={`h-5 w-5 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`} />
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-3xl font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
                 Latest Transactions
               </h2>
-              <Link href="/transactions" className={`text-sm ${theme === 'pink' ? 'text-white' : 'text-gray-900'} hover:underline`}>
-                View all →
+              <Link
+                href="/transactions"
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors group ${
+                  theme === 'pink'
+                    ? 'bg-white/20 hover:bg-white/30'
+                    : 'bg-pink-500 hover:bg-pink-600'
+                }`}
+              >
+                <ArrowRightIcon className="h-5 w-5 text-white transform rotate-[-45deg]" />
               </Link>
             </div>
-            
-            <div className="flex-1 flex flex-col">
-              <div className="flex-1 overflow-y-auto">
-                <div>
+
+            <div>
                   {transactionsLoading && recentTransactions.length === 0 ? (
-                  <div className={`text-center py-8 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/60`}>
+                  <div className={`text-center py-8 ${theme === 'pink' ? 'text-white/80' : 'text-gray-500'}`}>
                     Loading latest transactions...
                   </div>
                 ) : recentTransactions.length > 0 ? (
@@ -373,23 +389,33 @@ export default function HomePage() {
                     <Link
                       key={tx.hash}
                       href={`/transactions/${tx.hash}`}
-                      className={`block p-3 mb-3 rounded-xl transition-colors cursor-pointer border ${
-                        theme === 'pink' 
-                          ? 'bg-white/10 hover:bg-white/20 border-white/20' 
-                          : 'bg-white hover:bg-gray-50 border-gray-200 shadow-sm'
+                      className={`block p-4 mb-3 rounded-2xl transition-all cursor-pointer border ${
+                        theme === 'pink'
+                          ? 'bg-white/20 hover:bg-white/30 border-white/40 shadow-lg'
+                          : 'bg-white hover:bg-gray-50 border-gray-200'
                       } ${index === 0 ? 'animate-fadeIn' : ''}`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`font-mono text-xs ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`font-mono text-sm font-semibold ${
+                          theme === 'pink' ? 'text-white' : 'text-gray-900'
+                        }`}>
                           {truncateHash(tx.hash)}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                          getStatusColors(tx.status)
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                          tx.status === 1
+                            ? theme === 'pink'
+                              ? 'bg-emerald-400/30 text-white'
+                              : 'bg-emerald-100 text-emerald-700'
+                            : theme === 'pink'
+                              ? 'bg-rose-400/30 text-white'
+                              : 'bg-rose-100 text-rose-700'
                         }`}>
                           {getStatusText(tx.status)}
                         </span>
                       </div>
-                      <div className={`flex items-center justify-between text-xs ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/80`}>
+                      <div className={`flex items-center justify-between text-xs ${
+                        theme === 'pink' ? 'text-white/90' : 'text-gray-600'
+                      }`}>
                         <div>
                           From: {truncateHash(tx.from_address)}
                         </div>
@@ -400,54 +426,46 @@ export default function HomePage() {
                     </Link>
                   ))
                   ) : (
-                    <div className={`text-center py-8 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}/60`}>
+                    <div className={`text-center py-8 ${theme === 'pink' ? 'text-white/80' : 'text-gray-500'}`}>
                       {isConnected ? 'Waiting for transactions...' : 'Connecting...'}
                     </div>
                   )}
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 max-w-6xl mx-auto">
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+        <div className="max-w-6xl mx-auto">
+          <div className={`rounded-3xl p-8 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-white/10 backdrop-blur-md border-white/20'
+              : 'bg-white border-gray-100'
           }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Users className={`h-6 w-6 ${
-                  theme === 'pink' ? 'text-white' : 'text-gray-600'
-                }`} />
-                <h2 className={`text-xl font-bold ${
-                  theme === 'pink' ? 'text-white' : 'text-gray-900'
-                }`}>Total Users</h2>
-              </div>
-              <Link href="/addresses" className={`text-sm ${
-                theme === 'pink' ? 'text-white hover:text-white/80' : 'text-gray-900 hover:text-gray-700'
-              } hover:underline flex items-center gap-1`}>
-                View all addresses →
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-3xl font-bold ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
+                Total Users
+              </h2>
+              <Link
+                href="/addresses"
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors group ${
+                  theme === 'pink'
+                    ? 'bg-white/20 hover:bg-white/30'
+                    : 'bg-pink-500 hover:bg-pink-600'
+                }`}
+              >
+                <ArrowRightIcon className="h-5 w-5 text-white transform rotate-[-45deg]" />
               </Link>
             </div>
-            
-            <div className="mt-6 text-center">
-              <div className={`text-6xl font-black mb-2 ${
-                theme === 'pink' ? 'text-white' : 'text-gray-900'
-              }`}>
+
+            <div className="text-center py-8">
+              <div className={`text-6xl font-black mb-3 ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
                 {statsLoading ? '...' : (totalAddresses || statsData?.stats?.totalAddresses || 0).toLocaleString()}
               </div>
-              <div className={`text-sm ${
-                theme === 'pink' ? 'text-white/80' : 'text-gray-600'
-              }`}>
+              <div className={`text-sm ${theme === 'pink' ? 'text-white/90' : 'text-gray-600'}`}>
                 Total unique addresses
               </div>
             </div>
-            
-            <div className={`mt-6 text-center text-xs ${
-              theme === 'pink' ? 'text-white/70' : 'text-gray-500'
-            }`}>
+
+            <div className={`mt-6 text-center text-sm ${theme === 'pink' ? 'text-white/90' : 'text-gray-500'}`}>
               Addresses that have participated in blockchain transactions
             </div>
           </div>

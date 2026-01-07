@@ -105,10 +105,10 @@ export default function AddressGrowthChart() {
 
   if (loading) {
     return (
-      <div className={`rounded-2xl p-8 shadow-lg border ${
-        theme === 'pink' 
-          ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-          : 'bg-white border-gray-200'
+      <div className={`rounded-3xl p-8 shadow-sm border ${
+        theme === 'pink'
+          ? 'bg-white/10 backdrop-blur-md border-white/20'
+          : 'bg-white border-gray-100'
       }`}>
         <div className="flex items-center gap-3 mb-6">
           <TrendingUp className={`h-6 w-6 ${
@@ -186,10 +186,10 @@ export default function AddressGrowthChart() {
   
   if (!chartData) {
     return (
-      <div className={`rounded-2xl p-8 shadow-lg border ${
-        theme === 'pink' 
-          ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-          : 'bg-white border-gray-200'
+      <div className={`rounded-3xl p-8 shadow-sm border ${
+        theme === 'pink'
+          ? 'bg-white/10 backdrop-blur-md border-white/20'
+          : 'bg-white border-gray-100'
       }`}>
         <div className="flex items-center gap-3 mb-6">
           <TrendingUp className={`h-6 w-6 ${
@@ -217,10 +217,10 @@ export default function AddressGrowthChart() {
   }));
 
   return (
-    <div className={`rounded-2xl p-8 shadow-lg border ${
-      theme === 'pink' 
-        ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-        : 'bg-white border-gray-200'
+    <div className={`rounded-3xl p-8 shadow-sm border ${
+      theme === 'pink'
+        ? 'bg-white/10 backdrop-blur-md border-white/20'
+        : 'bg-white border-gray-100'
     }`}>
       <div className="flex items-center gap-3 mb-6">
         <TrendingUp className={`h-6 w-6 ${

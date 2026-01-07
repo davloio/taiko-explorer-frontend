@@ -25,8 +25,23 @@ export default function AddressesPage() {
   };
 
   return (
-    <div className={theme === 'pink' ? 'min-h-screen bg-[#C2185B]' : 'min-h-screen bg-gray-50'}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>
+      {/* Taiko-style animated background dots */}
+      <div className="taiko-bg-dots">
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '10%', left: '5%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '15%', left: '15%' }}></div>
+        <div className="taiko-dot taiko-dot-yellow" style={{ top: '20%', left: '85%' }}></div>
+        <div className="taiko-dot taiko-dot-cyan" style={{ top: '25%', right: '10%' }}></div>
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '40%', left: '8%' }}></div>
+        <div className="taiko-dot taiko-dot-orange" style={{ top: '50%', left: '90%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '60%', left: '12%' }}></div>
+        <div className="taiko-dot taiko-dot-yellow" style={{ top: '70%', right: '15%' }}></div>
+        <div className="taiko-dot taiko-dot-cyan" style={{ top: '75%', left: '20%' }}></div>
+        <div className="taiko-dot taiko-dot-pink" style={{ top: '85%', right: '8%' }}></div>
+        <div className="taiko-dot taiko-dot-purple" style={{ top: '30%', left: '50%' }}></div>
+        <div className="taiko-dot taiko-dot-orange" style={{ top: '5%', right: '25%' }}></div>
+      </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         
         {/* Hero Section */}
         <div className="text-center mb-8">
@@ -51,10 +66,10 @@ export default function AddressesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
           
           {/* Top Addresses by Volume */}
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-6 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
             <div className="flex items-center gap-3 mb-6">
               <TrendingUp className={`h-6 w-6 ${
@@ -133,10 +148,10 @@ export default function AddressesPage() {
           </div>
 
           {/* Top Addresses by Activity */}
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'pink' 
-              ? 'bg-white/20 backdrop-blur-sm border-white/30' 
-              : 'bg-white border-gray-200'
+          <div className={`rounded-3xl p-6 shadow-sm border ${
+            theme === 'pink'
+              ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-2xl border-white/40'
+              : 'bg-white border-gray-100'
           }`}>
             <div className="flex items-center gap-3 mb-6">
               <Activity className={`h-6 w-6 ${

@@ -11,6 +11,7 @@ import { Search, Menu, X, Activity, Hash, Users } from 'lucide-react';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<Array<{type: string, label: string, icon: any}>>([]);
@@ -67,7 +68,8 @@ export function Header() {
     const trimmed = searchQuery.trim();
     setShowSuggestions(false);
     setSearchQuery('');
-    
+    setIsSearchOpen(false);
+
     if (suggestion.type === 'block') {
       router.push(`/blocks/${trimmed}`);
     } else if (suggestion.type === 'transaction') {
@@ -104,242 +106,184 @@ export function Header() {
     updateSuggestions(value);
   };
 
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (!isSearchOpen) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    } else {
+      setSearchQuery('');
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      handleDirectSearch(searchQuery);
+      setIsSearchOpen(false);
+    }
+  };
+
   return (
-    <header className={`border-b sticky top-0 z-50 shadow-sm backdrop-blur ${
-      theme === 'pink' 
-        ? 'border-white/30 bg-[#C2185B] supports-[backdrop-filter]:bg-[#C2185B]/90' 
-        : 'border-gray-200 bg-white supports-[backdrop-filter]:bg-white/90'
-    }`}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header className="sticky top-0 z-50 pt-4 px-4">
+      <div className={`max-w-6xl mx-auto border rounded-full backdrop-blur-2xl shadow-xl ${theme === 'pink' ? 'border-white/40 bg-gradient-to-r from-purple-500/40 to-pink-500/40' : 'border-gray-200 bg-white/90'}`}>
+        <div className="flex justify-between items-center h-16 px-8">
           <div className="flex-shrink-0">
-            <div className="flex items-center space-x-3">
-              <a 
-                href="https://taiko.xyz/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="relative w-10 h-10 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-110 hover:shadow-xl overflow-hidden block"
-              >
-                <img 
-                  src="/Taiko Labs Logo.jpeg" 
-                  alt="Taiko Labs Logo" 
-                  className="w-full h-full object-cover rounded-xl"
+            <Link
+              href="/"
+              className="flex items-center space-x-3 group"
+            >
+              <div className="relative w-10 h-10 rounded-full shadow-md transform transition-all duration-200 group-hover:scale-110 overflow-hidden">
+                <img
+                  src="/Taiko Labs Logo.jpeg"
+                  alt="Taiko Labs Logo"
+                  className="w-full h-full object-cover rounded-full"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
-              </a>
-            </div>
+              </div>
+              <span className={`text-xl font-bold tracking-tight ${theme === 'pink' ? 'text-white' : 'text-gray-900'}`}>
+                Taiko Explorer
+              </span>
+            </Link>
           </div>
 
-          <nav className="hidden md:flex space-x-1">
+          <nav className="hidden md:flex space-x-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`relative px-4 py-2 transition-all duration-300 font-semibold group rounded-lg ${
-                  theme === 'pink'
-                    ? 'text-white/90 hover:text-white'
-                    : 'text-gray-700 hover:text-gray-900'
-                }`}
+                className={`px-5 py-2.5 text-base font-medium rounded-full transition-all duration-200 ${theme === 'pink' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[#F9F9F9] text-[#0B101B] hover:bg-gray-200'}`}
               >
-                <span className="relative z-10">{item.name}</span>
-                <div className="absolute inset-0 bg-white/10 rounded-lg transform scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
-                <div className={`absolute bottom-0 left-1/2 w-0 h-0.5 group-hover:w-full group-hover:left-0 transition-all duration-300 ${
-                  theme === 'pink' ? 'bg-white' : 'bg-gray-900'
-                }`}></div>
+                {item.name}
               </Link>
             ))}
           </nav>
 
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className={`h-5 w-5 transition-colors duration-200 ${
-                  theme === 'pink'
-                    ? 'text-white/60 group-focus-within:text-white'
-                    : 'text-gray-400 group-focus-within:text-gray-600'
-                }`} />
-              </div>
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search blocks, transactions, addresses..."
-                className={`w-full pl-12 pr-6 py-3 border rounded-xl backdrop-blur-sm transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg ${
-                  theme === 'pink'
-                    ? 'border-white/30 bg-white/20 focus:bg-white/30 focus:ring-2 focus:ring-white/50 focus:border-white text-white placeholder-white/60'
-                    : 'border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-taiko-pink focus:border-taiko-pink text-gray-900 placeholder-gray-500'
-                }`}
-                value={searchQuery}
-                onChange={handleSearchInputChange}
-                onFocus={() => updateSuggestions(searchQuery)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim()) {
-                    if (suggestions.length > 0) {
-                      handleSuggestionClick(suggestions[0]);
-                    } else {
-                      handleDirectSearch(searchQuery);
-                    }
-                  }
-                }}
-              />
-              
-              {showSuggestions && suggestions.length > 0 && (
-                <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 backdrop-blur-sm ${
-                  theme === 'pink' 
-                    ? 'bg-[#C2185B]/95 border-white/20' 
-                    : 'bg-white border-gray-200'
-                }`}>
-                  {suggestions.map((suggestion, index) => {
-                    const IconComponent = suggestion.icon;
-                    return (
-                      <button
-                        key={index}
-                        type="button"
-                        className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                          theme === 'pink' 
-                            ? 'text-white hover:bg-white/20' 
-                            : 'text-gray-900 hover:bg-gray-50'
-                        }`}
-                        onMouseDown={() => handleSuggestionClick(suggestion)}
-                      >
-                        <IconComponent className={`h-4 w-4 ${
-                          theme === 'pink' ? 'text-white/70' : 'text-gray-500'
-                        }`} />
-                        <span>{suggestion.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-
           <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSearch}
+              className={`w-10 h-10 rounded-full transition-colors duration-200 ${theme === 'pink' ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+            >
+              {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+            </Button>
             <ThemeToggle />
-            
             <div className="md:hidden">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`relative w-10 h-10 rounded-lg transition-colors duration-200 ${
-                  theme === 'pink'
-                    ? 'hover:bg-white/10 focus:bg-white/10 border border-white/30 hover:border-white/50'
-                    : 'hover:bg-gray-100 focus:bg-gray-100 border border-gray-300 hover:border-gray-400'
-                }`}
+                className={`w-10 h-10 rounded-full transition-colors duration-200 ${theme === 'pink' ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-600'}`}
               >
-                <div className="relative">
-                  {isMenuOpen ? (
-                    <X className={`h-5 w-5 transition-colors duration-200 ${
-                      theme === 'pink' ? 'text-white hover:text-white/80' : 'text-gray-600 hover:text-gray-800'
-                    }`} />
-                  ) : (
-                    <Menu className={`h-5 w-5 transition-colors duration-200 ${
-                      theme === 'pink' ? 'text-white hover:text-white/80' : 'text-gray-600 hover:text-gray-800'
-                    }`} />
-                  )}
-                </div>
+                {isMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </Button>
             </div>
           </div>
         </div>
 
+
         {isMenuOpen && (
-          <div className="md:hidden animate-in slide-in-from-top-2 duration-300">
-            <div className={`px-4 pt-4 pb-6 space-y-3 border-t backdrop-blur-sm ${
-              theme === 'pink'
-                ? 'border-white/30 bg-white/20'
-                : 'border-gray-200 bg-gray-50'
-            }`}>
-              {navigation.map((item, index) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`block px-4 py-3 text-base font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
-                    theme === 'pink'
-                      ? 'text-white/90 hover:text-white hover:bg-white/10'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{item.name}</span>
-                    <div className="w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                  </div>
-                </Link>
-              ))}
-              
-              <div className="px-2 pt-4">
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Search className={`h-5 w-5 transition-colors duration-200 ${
-                      theme === 'pink'
-                        ? 'text-white/60 group-focus-within:text-white'
-                        : 'text-gray-400 group-focus-within:text-gray-600'
-                    }`} />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search blocks, transactions..."
-                    className={`w-full pl-12 pr-4 py-3 border rounded-xl transition-all duration-300 ${
-                      theme === 'pink'
-                        ? 'border-white/30 bg-white/20 focus:bg-white/30 focus:ring-2 focus:ring-white/50 focus:border-white text-white placeholder-white/60'
-                        : 'border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-taiko-pink focus:border-taiko-pink text-gray-900 placeholder-gray-500'
-                    }`}
-                    value={searchQuery}
-                    onChange={handleSearchInputChange}
-                    onFocus={() => updateSuggestions(searchQuery)}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && searchQuery.trim()) {
-                        if (suggestions.length > 0) {
-                          handleSuggestionClick(suggestions[0]);
-                        } else {
-                          handleDirectSearch(searchQuery);
-                        }
-                        setIsMenuOpen(false);
-                      }
-                    }}
-                  />
-                  
-                  {showSuggestions && suggestions.length > 0 && (
-                    <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 backdrop-blur-sm ${
-                      theme === 'pink' 
-                        ? 'bg-[#C2185B]/95 border-white/20' 
-                        : 'bg-white border-gray-200'
-                    }`}>
-                      {suggestions.map((suggestion, index) => {
-                        const IconComponent = suggestion.icon;
-                        return (
-                          <button
-                            key={index}
-                            type="button"
-                            className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                              theme === 'pink' 
-                                ? 'text-white hover:bg-white/20' 
-                                : 'text-gray-900 hover:bg-gray-50'
-                            }`}
-                            onMouseDown={() => {
-                              handleSuggestionClick(suggestion);
-                              setIsMenuOpen(false);
-                            }}
-                          >
-                            <IconComponent className={`h-4 w-4 ${
-                              theme === 'pink' ? 'text-white/70' : 'text-gray-500'
-                            }`} />
-                            <span>{suggestion.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className={`md:hidden px-6 pt-4 pb-6 space-y-3 border-t ${theme === 'pink' ? 'border-white/30' : 'border-gray-200'}`}>
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`block px-5 py-3 text-base font-medium rounded-full transition-all duration-200 ${theme === 'pink' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[#F9F9F9] text-gray-900 hover:bg-gray-200'}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-32 px-4">
+          {/* Backdrop */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-300 ${
+              theme === 'pink' ? 'bg-[#C2185B]/60' : 'bg-black/20'
+            } backdrop-blur-sm`}
+            onClick={toggleSearch}
+          />
+
+          {/* Search Container */}
+          <div className="relative w-full max-w-2xl animate-in fade-in slide-in-from-top-4 duration-300">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <div className={`relative rounded-3xl shadow-2xl overflow-hidden ${
+                theme === 'pink'
+                  ? 'bg-white/95 backdrop-blur-md'
+                  : 'bg-white border border-gray-200'
+              }`}>
+                <div className="flex items-center px-6 py-5">
+                  <Search className={`h-6 w-6 mr-4 ${theme === 'pink' ? 'text-[#C2185B]' : 'text-gray-400'}`} />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    placeholder="Search blocks, transactions, addresses..."
+                    className="flex-1 text-lg outline-none bg-transparent placeholder-gray-400 text-gray-900"
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleSearch}
+                    className="ml-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  >
+                    <X className="h-5 w-5 text-gray-500" />
+                  </button>
+                </div>
+
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="border-t border-gray-100">
+                    {suggestions.map((suggestion, index) => {
+                      const Icon = suggestion.icon;
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          className="w-full px-6 py-4 flex items-center space-x-4 hover:bg-gray-50 transition-colors text-left"
+                        >
+                          <div className={`p-2 rounded-full ${
+                            theme === 'pink' ? 'bg-[#C2185B]/10' : 'bg-gray-100'
+                          }`}>
+                            <Icon className={`h-5 w-5 ${
+                              theme === 'pink' ? 'text-[#C2185B]' : 'text-gray-600'
+                            }`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-900">
+                              {suggestion.label}
+                            </div>
+                            <div className="text-xs text-gray-500 capitalize">
+                              {suggestion.type}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {searchQuery && !showSuggestions && (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    <p className="text-sm">No results found. Try a block number, transaction hash, or address.</p>
+                  </div>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
