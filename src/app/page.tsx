@@ -143,20 +143,53 @@ export default function HomePage() {
 
   return (
     <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>
-      {/* Taiko-style animated background dots */}
-      <div className="taiko-bg-dots">
-        <div className="taiko-dot taiko-dot-pink" style={{ top: '10%', left: '5%' }}></div>
-        <div className="taiko-dot taiko-dot-purple" style={{ top: '15%', left: '15%' }}></div>
-        <div className="taiko-dot taiko-dot-yellow" style={{ top: '20%', left: '85%' }}></div>
-        <div className="taiko-dot taiko-dot-cyan" style={{ top: '25%', right: '10%' }}></div>
-        <div className="taiko-dot taiko-dot-pink" style={{ top: '40%', left: '8%' }}></div>
-        <div className="taiko-dot taiko-dot-orange" style={{ top: '50%', left: '90%' }}></div>
-        <div className="taiko-dot taiko-dot-purple" style={{ top: '60%', left: '12%' }}></div>
-        <div className="taiko-dot taiko-dot-yellow" style={{ top: '70%', right: '15%' }}></div>
-        <div className="taiko-dot taiko-dot-cyan" style={{ top: '75%', left: '20%' }}></div>
-        <div className="taiko-dot taiko-dot-pink" style={{ top: '85%', right: '8%' }}></div>
-        <div className="taiko-dot taiko-dot-purple" style={{ top: '30%', left: '50%' }}></div>
-        <div className="taiko-dot taiko-dot-orange" style={{ top: '5%', right: '25%' }}></div>
+      {/* Technical Grid Background */}
+      <div className="taiko-technical-bg">
+        {/* Grid layers */}
+        <div className="taiko-grid"></div>
+        <div className="taiko-grid-accent"></div>
+        
+        {/* Circuit lines */}
+        <div className="taiko-circuit-line taiko-circuit-horizontal" style={{ top: '20%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-horizontal" style={{ top: '50%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-horizontal" style={{ top: '80%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-vertical" style={{ left: '15%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-vertical" style={{ left: '50%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-vertical" style={{ left: '85%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-horizontal" style={{ top: '60%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-vertical" style={{ left: '25%' }}></div>
+        <div className="taiko-circuit-line taiko-circuit-vertical" style={{ left: '75%' }}></div>
+        
+        {/* Technical geometric shapes */}
+        <div className="taiko-tech-shape taiko-tech-hexagon" style={{ top: '15%', left: '12%', animationDelay: '0s' }}></div>
+        <div className="taiko-tech-shape taiko-tech-triangle" style={{ top: '25%', right: '18%', animationDelay: '3s' }}></div>
+        <div className="taiko-tech-shape taiko-tech-square" style={{ bottom: '20%', left: '20%', animationDelay: '6s' }}></div>
+        <div className="taiko-tech-shape taiko-tech-hexagon" style={{ bottom: '30%', right: '15%', animationDelay: '4s' }}></div>
+        <div className="taiko-tech-shape taiko-tech-triangle" style={{ top: '25%', right: '18%', animationDelay: '3s' }}></div>
+        <div className="taiko-tech-shape taiko-tech-square" style={{ bottom: '20%', left: '20%', animationDelay: '6s' }}></div>
+        
+        {/* Data streams */}
+        <div className="taiko-data-stream" style={{ left: '15%', animationDelay: '0s' }}></div>
+        <div className="taiko-data-stream" style={{ left: '35%', animationDelay: '1.5s' }}></div>
+        <div className="taiko-data-stream" style={{ left: '55%', animationDelay: '0.8s' }}></div>
+        <div className="taiko-data-stream" style={{ left: '75%', animationDelay: '2s' }}></div>
+        <div className="taiko-data-stream" style={{ left: '90%', animationDelay: '1s' }}></div>
+        <div className="taiko-data-stream" style={{ left: '45%', animationDelay: '2s' }}></div>
+        <div className="taiko-data-stream" style={{ left: '85%', animationDelay: '1s' }}></div>
+        
+        {/* Technical nodes */}
+        <div className="taiko-node" style={{ top: '20%', left: '15%', animationDelay: '0s' }}></div>
+        <div className="taiko-node" style={{ top: '20%', left: '50%', animationDelay: '0.5s' }}></div>
+        <div className="taiko-node" style={{ top: '20%', left: '85%', animationDelay: '1s' }}></div>
+        <div className="taiko-node" style={{ top: '50%', left: '15%', animationDelay: '1.5s' }}></div>
+        <div className="taiko-node" style={{ top: '50%', left: '50%', animationDelay: '2s' }}></div>
+        <div className="taiko-node" style={{ top: '50%', left: '85%', animationDelay: '2.5s' }}></div>
+        <div className="taiko-node" style={{ top: '80%', left: '15%', animationDelay: '3s' }}></div>
+        <div className="taiko-node" style={{ top: '80%', left: '50%', animationDelay: '3.5s' }}></div>
+        <div className="taiko-node" style={{ top: '80%', left: '85%', animationDelay: '4s' }}></div>
+        <div className="taiko-node" style={{ top: '20%', left: '75%', animationDelay: '1s' }}></div>
+        <div className="taiko-node" style={{ top: '60%', left: '25%', animationDelay: '2s' }}></div>
+        <div className="taiko-node" style={{ top: '60%', left: '75%', animationDelay: '3s' }}></div>
       </div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
 
