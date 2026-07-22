@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@/lib/mock-client';
 import { GET_STATS, GET_RECENT_BLOCKS, GET_RECENT_TRANSACTIONS } from '@/lib/graphql-queries';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -57,7 +57,7 @@ export default function HomePage() {
     totalBlocks, 
     totalTransactions,
     totalAddresses 
-  } = useWebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT, webSocketOptions);
+  } = useWebSocket(undefined, webSocketOptions);
 
 
   

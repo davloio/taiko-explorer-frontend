@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@/lib/mock-client';
 import { GET_TOP_ADDRESSES } from '@/lib/graphql-queries';
 import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';

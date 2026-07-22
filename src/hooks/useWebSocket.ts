@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { appendLiveBlock, getStats } from '@/lib/mock-data';
 
 export interface BlockData {
   number: number;
@@ -54,27 +55,6 @@ export interface AddressStatsData {
   last_seen_block: number;
 }
 
-export interface BlockHeightData {
-  block_number: number;
-  timestamp: number;
-  status: 'height_stored';
-  miner: string;
-  transaction_count: number;
-}
-
-export interface BlockCompleteData {
-  block_number: number;
-  timestamp: number;
-  status: 'transactions_processed';
-}
-
-export interface WebSocketMessage {
-  type: 'connected' | 'new_block' | 'new_block_height' | 'block_complete' | 'new_transaction' | 'stats' | 'new_address' | 'address_activity' | 'address_stats_update' | 'error';
-  message?: string;
-  connection_id?: string;
-  data?: BlockData | BlockHeightData | BlockCompleteData | TransactionData | StatsData | AddressData | AddressActivityData | AddressStatsData;
-}
-
 export interface UseWebSocketReturn {
   isConnected: boolean;
   lastBlock: BlockData | null;
@@ -98,8 +78,54 @@ export interface UseWebSocketOptions {
   initialTransactions?: TransactionData[];
 }
 
+// Matches the home page's own "Next block in N seconds" countdown (see src/app/page.tsx)
+// so the visible timer hitting zero lines up with a new block actually arriving.
+const LIVE_BLOCK_INTERVAL_MS = 6000;
+// Simulated network/indexing delay between a block being proposed (number known) and
+// its transactions finishing processing (full data available) — mimics a real fetch round-trip.
+const PROCESSING_MIN_MS = 700;
+const PROCESSING_MAX_MS = 1600;
+
+function toBlockData(block: ReturnType<typeof appendLiveBlock>['block']): BlockData {
+  return {
+    number: block.number,
+    hash: block.hash,
+    timestamp: block.timestamp,
+    transaction_count: block.transactionCount,
+    gas_used: String(block.gasUsed),
+    gas_limit: String(block.gasLimit),
+    miner: block.miner,
+  };
+}
+
+function toPendingBlockData(block: ReturnType<typeof appendLiveBlock>['block']): BlockData {
+  return {
+    number: block.number,
+    hash: `pending_${block.number}`,
+    timestamp: block.timestamp,
+    transaction_count: block.transactionCount,
+    gas_used: '0',
+    gas_limit: String(block.gasLimit),
+    miner: block.miner,
+  };
+}
+
+function toTransactionData(tx: ReturnType<typeof appendLiveBlock>['transactions'][number]): TransactionData {
+  return {
+    hash: tx.hash,
+    block_number: tx.blockNumber,
+    from_address: tx.fromAddress,
+    to_address: tx.toAddress,
+    value: tx.value,
+    gas_used: tx.gasUsed,
+    status: tx.status,
+    direction: tx.direction,
+  };
+}
+
+/** Simulates the live block/transaction feed that used to arrive over a real WebSocket. */
 export function useWebSocket(
-  url: string = process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT || 'ws://localhost:3000/ws', 
+  _url: string = '',
   options: UseWebSocketOptions = {}
 ): UseWebSocketReturn {
   const [isConnected, setIsConnected] = useState(false);
@@ -110,196 +136,80 @@ export function useWebSocket(
   const [recentBlocks, setRecentBlocks] = useState<BlockData[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<TransactionData[]>([]);
   const [stats, setStats] = useState<StatsData | null>(null);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
   const [totalBlocks, setTotalBlocks] = useState(0);
   const [totalTransactions, setTotalTransactions] = useState(0);
   const [totalAddresses, setTotalAddresses] = useState(0);
-  const [newAddress, setNewAddress] = useState<AddressData | null>(null);
-  const [addressActivity, setAddressActivity] = useState<AddressActivityData | null>(null);
-  const [addressStats, setAddressStats] = useState<AddressStatsData | null>(null);
-  
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
 
-  const connect = () => {
-    try {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-
-      wsRef.current = new WebSocket(url);
-
-      wsRef.current.onopen = () => {
-        setIsConnected(true);
-        setConnectionError(null);
-        reconnectAttempts.current = 0;
-      };
-
-      wsRef.current.onmessage = (event) => {
-        try {
-          const message: WebSocketMessage = JSON.parse(event.data);
-          
-          switch (message.type) {
-            case 'connected':
-              break;
-              
-            case 'new_block_height':
-              if (message.data && 'block_number' in message.data) {
-                const heightData = message.data as BlockHeightData;
-                setLatestBlockNumber(heightData.block_number);
-                setTotalBlocks(heightData.block_number);
-                setProcessingBlocks(prev => new Set([...prev, heightData.block_number]));
-                setIsBlockProcessing(true);
-                const basicBlock: BlockData = {
-                  number: heightData.block_number,
-                  hash: `temp_${heightData.block_number}`,
-                  timestamp: heightData.timestamp,
-                  transaction_count: heightData.transaction_count,
-                  gas_used: '0',
-                  gas_limit: '30000000',
-                  miner: heightData.miner
-                };
-                setRecentBlocks(prev => {
-                  const exists = prev.some(block => block.number === heightData.block_number);
-                  if (exists) return prev;
-                  return [basicBlock, ...prev].slice(0, 10);
-                });
-              }
-              break;
-              
-            case 'block_complete':
-              if (message.data && 'block_number' in message.data) {
-                const completeData = message.data as BlockCompleteData;
-                setProcessingBlocks(prev => {
-                  const newSet = new Set(prev);
-                  newSet.delete(completeData.block_number);
-                  return newSet;
-                });
-                setIsBlockProcessing(prev => processingBlocks.size > 1);
-              }
-              break;
-              
-            case 'new_block':
-              if (message.data && 'number' in message.data) {
-                const blockData = message.data as BlockData;
-                setLastBlock(blockData);
-                setLatestBlockNumber(blockData.number);
-                setTotalBlocks(blockData.number);
-                setRecentBlocks(prev => {
-                  const existingIndex = prev.findIndex(block => block.number === blockData.number);
-                  if (existingIndex !== -1) {
-                    const updated = [...prev];
-                    updated[existingIndex] = blockData;
-                    return updated;
-                  } else {
-                    return [blockData, ...prev].slice(0, 10);
-                  }
-                });
-                setProcessingBlocks(prev => {
-                  const newSet = new Set(prev);
-                  newSet.delete(blockData.number);
-                  return newSet;
-                });
-                setIsBlockProcessing(prev => processingBlocks.size > 1);
-              }
-              break;
-              
-            case 'new_transaction':
-              if (message.data && 'hash' in message.data) {
-                const txData = message.data as TransactionData;
-                setRecentTransactions(prev => {
-                  const exists = prev.some(tx => tx.hash === txData.hash);
-                  if (exists) {
-                    return prev;
-                  }
-                  const newList = [txData, ...prev].slice(0, 10);
-                  return newList;
-                });
-                setTotalTransactions(prev => prev + 1);
-              }
-              break;
-              
-            case 'stats':
-              if (message.data && 'total_blocks' in message.data) {
-                const statsData = message.data as StatsData;
-                setStats(statsData);
-                setTotalBlocks(statsData.total_blocks);
-                setTotalTransactions(statsData.total_transactions);
-                setTotalAddresses(statsData.total_addresses);
-              }
-              break;
-              
-            case 'new_address':
-              if (message.data && 'address' in message.data) {
-                const addressData = message.data as AddressData;
-                setNewAddress(addressData);
-              }
-              break;
-              
-            case 'address_activity':
-              if (message.data && 'address' in message.data && 'transaction_hash' in message.data) {
-                const activityData = message.data as AddressActivityData;
-                setAddressActivity(activityData);
-              }
-              break;
-              
-            case 'address_stats_update':
-              if (message.data && 'address' in message.data && 'total_transactions' in message.data) {
-                const statsData = message.data as AddressStatsData;
-                setAddressStats(statsData);
-              }
-              break;
-              
-            case 'error':
-              setConnectionError(message.message || 'Unknown WebSocket error');
-              break;
-              
-            default:
-          }
-        } catch (error) {
-        }
-      };
-
-      wsRef.current.onclose = (event) => {
-        if (event.code !== 1000) {
-          setIsConnected(false);
-        }
-        if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
-          
-          reconnectTimeoutRef.current = setTimeout(() => {
-            reconnectAttempts.current++;
-            connect();
-          }, delay);
-        } else if (reconnectAttempts.current >= maxReconnectAttempts) {
-          setConnectionError('Failed to reconnect after multiple attempts');
-          setIsConnected(false);
-        }
-      };
-
-      wsRef.current.onerror = (error) => {
-        setConnectionError('WebSocket connection failed');
-      };
-
-    } catch (error) {
-      setConnectionError('Failed to create WebSocket connection');
-    }
-  };
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   useEffect(() => {
-    connect();
+    const connectTimer = setTimeout(() => {
+      setIsConnected(true);
+      const initial = getStats();
+      setStats({
+        total_blocks: initial.totalBlocks,
+        latest_block: initial.latestBlockNumber,
+        total_transactions: initial.totalTransactions,
+        total_addresses: initial.totalAddresses,
+        avg_block_time: initial.avgBlockTime,
+      });
+      setTotalBlocks(initial.totalBlocks);
+      setTotalTransactions(initial.totalTransactions);
+      setTotalAddresses(initial.totalAddresses);
+      setLatestBlockNumber(initial.latestBlockNumber);
+    }, 400);
+
+    const pendingTimers = new Set<ReturnType<typeof setTimeout>>();
+
+    const liveInterval = setInterval(() => {
+      const { block, transactions } = appendLiveBlock();
+
+      // Phase 1: block is "proposed" — number, miner and tx count are known immediately,
+      // but the block isn't fully indexed yet (matches new_block_height on a real feed).
+      setLatestBlockNumber(block.number);
+      setTotalBlocks(block.number);
+      setProcessingBlocks((prev) => new Set([...prev, block.number]));
+      setIsBlockProcessing(true);
+      setRecentBlocks((prev) => [toPendingBlockData(block), ...prev].slice(0, 10));
+
+      // Phase 2: after a short simulated fetch, the full block + its transactions land.
+      const revealDelay = PROCESSING_MIN_MS + Math.random() * (PROCESSING_MAX_MS - PROCESSING_MIN_MS);
+      const revealTimer = setTimeout(() => {
+        pendingTimers.delete(revealTimer);
+        const blockData = toBlockData(block);
+
+        setLastBlock(blockData);
+        setRecentBlocks((prev) => {
+          const index = prev.findIndex((b) => b.number === block.number);
+          if (index === -1) return [blockData, ...prev].slice(0, 10);
+          const next = [...prev];
+          next[index] = blockData;
+          return next;
+        });
+
+        if (transactions.length > 0) {
+          const txData = transactions.map(toTransactionData);
+          setRecentTransactions((prev) => [...txData, ...prev].slice(0, 10));
+          setTotalTransactions((prev) => prev + transactions.length);
+        }
+
+        setProcessingBlocks((prev) => {
+          const next = new Set(prev);
+          next.delete(block.number);
+          setIsBlockProcessing(next.size > 0);
+          return next;
+        });
+      }, revealDelay);
+      pendingTimers.add(revealTimer);
+    }, LIVE_BLOCK_INTERVAL_MS);
 
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (wsRef.current) {
-        wsRef.current.close(1000, 'Component unmounting');
-      }
+      clearTimeout(connectTimer);
+      clearInterval(liveInterval);
+      pendingTimers.forEach(clearTimeout);
     };
-  }, [url]);
+  }, []);
 
   useEffect(() => {
     if (options.initialBlocks && options.initialBlocks.length > 0 && recentBlocks.length === 0) {
@@ -326,12 +236,12 @@ export function useWebSocket(
     recentBlocks,
     recentTransactions,
     stats,
-    connectionError,
+    connectionError: null,
     totalBlocks,
     totalTransactions,
     totalAddresses,
-    newAddress,
-    addressActivity,
-    addressStats
+    newAddress: null,
+    addressActivity: null,
+    addressStats: null,
   };
 }

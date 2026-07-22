@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@/lib/mock-client';
 import { useTheme } from '@/contexts/ThemeContext';
 import { GET_ADDRESS_GROWTH_CHART } from '@/lib/graphql-queries';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -25,9 +24,8 @@ interface AddressGrowthResponse {
 export default function AddressGrowthChart() {
   const { theme } = useTheme();
 
-  const { data, loading, error } = useQuery<AddressGrowthResponse>(GET_ADDRESS_GROWTH_CHART, {
-    variables: { timeRange: 'ALL_TIME' },
-    errorPolicy: 'all'
+  const { data, loading } = useQuery<AddressGrowthResponse>(GET_ADDRESS_GROWTH_CHART, {
+    variables: { timeRange: 'ALL_TIME' }
   });
 
   const formatDate = (timestamp: string) => {
@@ -163,28 +161,7 @@ export default function AddressGrowthChart() {
     );
   }
 
-  const mockData = {
-    addressGrowthChart: {
-      data: [
-        { timestamp: '2024-05-25T00:00:00Z', totalAddresses: 0, newAddresses: 0 },
-        { timestamp: '2024-05-26T00:00:00Z', totalAddresses: 4, newAddresses: 4 },
-        { timestamp: '2024-05-27T00:00:00Z', totalAddresses: 22564, newAddresses: 22560 },
-        { timestamp: '2024-05-29T00:00:00Z', totalAddresses: 35161, newAddresses: 12597 },
-        { timestamp: '2024-06-15T00:00:00Z', totalAddresses: 45200, newAddresses: 10039 },
-        { timestamp: '2024-07-01T00:00:00Z', totalAddresses: 58900, newAddresses: 13700 },
-        { timestamp: '2024-08-01T00:00:00Z', totalAddresses: 67500, newAddresses: 8600 },
-        { timestamp: '2024-09-01T00:00:00Z', totalAddresses: 78200, newAddresses: 10700 },
-        { timestamp: '2024-10-01T00:00:00Z', totalAddresses: 85100, newAddresses: 6900 },
-        { timestamp: '2024-11-09T00:00:00Z', totalAddresses: 92500, newAddresses: 7400 }
-      ],
-      totalAddresses: 92500,
-      dataPoints: 10
-    }
-  };
-
-  const chartData = data || (error ? mockData : null);
-  
-  if (!chartData) {
+  if (!data) {
     return (
       <div className={`rounded-3xl p-8 shadow-sm border ${
         theme === 'pink'
@@ -210,7 +187,7 @@ export default function AddressGrowthChart() {
     );
   }
 
-  const processedData = chartData.addressGrowthChart.data.map(item => ({
+  const processedData = data.addressGrowthChart.data.map(item => ({
     ...item,
     date: formatDate(item.timestamp),
     originalTimestamp: item.timestamp
@@ -257,7 +234,7 @@ export default function AddressGrowthChart() {
           <p className={`text-4xl font-bold ${
             theme === 'pink' ? 'text-white' : 'text-gray-900'
           }`}>
-            {chartData.addressGrowthChart.totalAddresses.toLocaleString()}
+            {data.addressGrowthChart.totalAddresses.toLocaleString()}
           </p>
         </div>
       </div>

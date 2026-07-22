@@ -2,7 +2,6 @@
 
 import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
-import { ApolloWrapper } from '@/components/apollo-wrapper';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
@@ -43,13 +42,11 @@ export default function RootLayout({
       <body className={montserrat.className}>
         <ThemeProvider>
           <ThemedBody>
-            <ApolloWrapper>
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </ApolloWrapper>
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
           </ThemedBody>
         </ThemeProvider>
       </body>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@/lib/mock-client';
 import { useTheme } from '@/contexts/ThemeContext';
 import { GET_BLOCK_BY_NUMBER } from '@/lib/graphql-queries';
 import Link from 'next/link';
