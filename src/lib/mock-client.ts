@@ -32,7 +32,7 @@ function resolve(operation: string, variables: Variables): any {
     case GET_BLOCK_BY_NUMBER:
       return { block: mock.getBlockByNumber(variables.blockNumber) };
     case GET_BLOCKS:
-      return { blocks: mock.getBlocks(variables.limit ?? 20) };
+      return { blocks: mock.getBlocks(variables.limit ?? 20, variables.offset ?? 0) };
     case GET_TRANSACTION_BY_HASH:
       return { transaction: mock.getTransactionByHash(variables.hash) };
     case GET_TRANSACTIONS:
@@ -93,11 +93,13 @@ export function useQuery<T = any>(operation: string, options: UseQueryOptions = 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    // This is in-memory data, not a real network call — a short delay is enough to let
+    // loading skeletons flash without making list pages feel slow on every click.
     const timer = setTimeout(() => {
       if (cancelled) return;
       setData(resolve(operation, variables));
       setLoading(false);
-    }, 300 + Math.random() * 250);
+    }, 40 + Math.random() * 60);
     return () => {
       cancelled = true;
       clearTimeout(timer);

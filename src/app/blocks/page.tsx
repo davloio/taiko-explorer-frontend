@@ -18,18 +18,14 @@ export default function BlocksPage() {
 
   const { data, loading, error } = useQuery(GET_BLOCKS, {
     variables: {
-      limit: blocksPerPage * currentPage // Get all blocks up to current page
+      limit: blocksPerPage,
+      offset: (currentPage - 1) * blocksPerPage
     }
   });
 
-  const allBlocks = data?.blocks?.blocks || [];
+  const blocks = data?.blocks?.blocks || [];
   const totalBlocks = data?.blocks?.totalCount || 0;
   const totalPages = Math.ceil(totalBlocks / blocksPerPage);
-  
-  // Get blocks for current page (slice the array for pagination)
-  const startIndex = (currentPage - 1) * blocksPerPage;
-  const endIndex = startIndex + blocksPerPage;
-  const blocks = allBlocks.slice(startIndex, endIndex);
 
   return (
     <div className={theme === 'pink' ? 'min-h-screen bg-gradient-to-br from-[#C2185B] to-pink-500 relative overflow-hidden transition-colors duration-500' : 'min-h-screen bg-gradient-to-br from-white to-pink-100 relative overflow-hidden transition-colors duration-500'}>

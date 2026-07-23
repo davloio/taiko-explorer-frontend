@@ -5,7 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { GET_ADDRESS_STATS, GET_ADDRESS_PROFILE, GET_ADDRESS_TRANSACTIONS } from '@/lib/graphql-queries';
 import Link from 'next/link';
 import { ArrowLeft, Hash, Activity, TrendingUp, Clock, ExternalLink, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface AddressDetailPageProps {
@@ -30,7 +30,7 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
     variables: { address: params.address }
   });
 
-  const { data: transactionsData, loading: transactionsLoading, error: transactionsError, refetch } = useQuery(GET_ADDRESS_TRANSACTIONS, {
+  const { data: transactionsData, loading: transactionsLoading, error: transactionsError } = useQuery(GET_ADDRESS_TRANSACTIONS, {
     variables: { 
       address: params.address, 
       limit: pageSize, 
@@ -53,11 +53,6 @@ export default function AddressDetailPage({ params }: AddressDetailPageProps) {
     { value: 'OUT', label: 'out' },
     { value: 'INSIDE', label: 'internal' }
   ];
-
-  // Refetch when filters change
-  useEffect(() => {
-    refetch();
-  }, [statusFilter, directionFilter, currentPage, refetch]);
 
   const handleCopy = async () => {
     try {

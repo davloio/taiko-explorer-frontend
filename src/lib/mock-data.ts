@@ -230,9 +230,9 @@ export function getRecentBlocks(limit: number) {
   return { blocks: all.slice(0, limit), totalCount: getChainHeight() };
 }
 
-export function getBlocks(limit: number) {
+export function getBlocks(limit: number, offset: number = 0) {
   const all = blocksDesc();
-  return { blocks: all.slice(0, limit), totalCount: getChainHeight() };
+  return { blocks: all.slice(offset, offset + limit), totalCount: getChainHeight() };
 }
 
 export function getBlockByNumber(number: number) {

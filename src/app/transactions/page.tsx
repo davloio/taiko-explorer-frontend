@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@/lib/mock-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +18,7 @@ export default function TransactionsPage() {
   const [directionFilter, setDirectionFilter] = useState<string>('ALL');
   const transactionsPerPage = 50;
 
-  const { data, loading, error, refetch } = useQuery(GET_TRANSACTIONS, {
+  const { data, loading, error } = useQuery(GET_TRANSACTIONS, {
     variables: {
       limit: transactionsPerPage,
       offset: (currentPage - 1) * transactionsPerPage,
@@ -28,14 +28,8 @@ export default function TransactionsPage() {
     fetchPolicy: 'cache-and-network'
   });
 
-
   const { data: statusCounts } = useQuery(GET_TRANSACTION_COUNTS_BY_STATUS);
   const { data: directionCounts } = useQuery(GET_TRANSACTION_COUNTS_BY_DIRECTION);
-
-  // Refetch when filters change
-  useEffect(() => {
-    refetch();
-  }, [statusFilter, directionFilter, currentPage, refetch]);
 
   const transactions = data?.transactions?.transactions || [];
   const totalTransactions = data?.transactions?.totalCount || 0;
